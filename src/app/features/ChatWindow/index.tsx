@@ -1,5 +1,13 @@
-import { ChangeEvent, useEffect, useRef } from "react";
-import { IconButton, InputBase, Paper, Stack, Typography } from "@mui/material";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import {
+  Box,
+  CircularProgress,
+  IconButton,
+  InputBase,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import SendIcon from "@mui/icons-material/Send";
 import { useAuth } from "@pangeacyber/react-auth";
@@ -16,18 +24,28 @@ import {
 import ChatScroller from "./components/ChatScroller";
 import { Colors } from "@src/app/theme";
 
+function hashCode(str: string) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+  }
+  return (hash >>> 0).toString(36).padStart(7, "0") + Date.now();
+}
+
 const ChatWindow = () => {
   const theme = useTheme();
-  const mounted = useRef(false);
   const {
+    loading,
     processing,
     promptGuardEnabled,
     dataGuardEnabled,
     systemPrompt,
     userPrompt,
+    messages,
+    setMessages,
     setProcessing,
     setUserPrompt,
-    setMessages,
     setLoading,
     setLoginOpen,
   } = useChatContext();
@@ -41,7 +59,7 @@ const ChatWindow = () => {
 
     const token = user?.active_token?.token || "";
 
-    setProcessing(true);
+    setProcessing("Logging user prompt");
 
     const logEvent = {
       event: {
@@ -53,28 +71,60 @@ const ChatWindow = () => {
       },
     };
 
-    const logPromptResp = await auditUserPrompt(token, logEvent);
-    console.log("log user prompt", logPromptResp);
+    const logResp = await auditUserPrompt(token, logEvent);
+    const promptMsg: ChatMessage = {
+      hash: logResp.hash,
+      type: "user_prompt",
+      input: userPrompt,
+    };
+    setMessages([...messages, promptMsg]);
+    setUserPrompt("");
 
     if (promptGuardEnabled) {
-      const promptResp = await callPromptGuard(token, userPrompt, systemPrompt);
-      // console.log("prompt guard response", promptResp);
+      setProcessing("Checking user prompt with Prompt Guard");
+
+      const promptResp = await callPromptGuard(token, userPrompt, "");
+      const pgMsg: ChatMessage = {
+        hash: hashCode(JSON.stringify(promptResp)),
+        type: "prompt_guard",
+        output: JSON.stringify(promptResp),
+      };
+      setMessages([...messages, pgMsg]);
     }
 
     if (dataGuardEnabled) {
+      setProcessing("Checking user prompt with Data Guard");
+
       const dataResp = await callInputDataGuard(token, userPrompt);
-      // console.log("input data guard response", dataResp);
+      const dgiMsg: ChatMessage = {
+        hash: hashCode(JSON.stringify(dataResp)),
+        type: "data_guard",
+        findings: JSON.stringify(dataResp.findings),
+      };
+      setMessages([...messages, dgiMsg]);
     }
 
+    setProcessing("Waiting for LLM response");
     const llmResponse = await sendUserMessage(token, userPrompt, systemPrompt);
-    // console.log("LLM Response", llmResponse);
+    const llmMsg: ChatMessage = {
+      hash: hashCode(llmResponse),
+      type: "llm_response",
+      output: llmResponse,
+    };
+    setMessages([...messages, llmMsg]);
 
     if (dataGuardEnabled) {
+      setProcessing("Checking LLM response with Data Guard");
       const dataResp = await callResponseDataGuard(token, llmResponse);
-      // console.log("llm data guard response", dataResp);
+      const dgrMsg: ChatMessage = {
+        hash: hashCode(JSON.stringify(dataResp)),
+        type: "data_guard",
+        findings: JSON.stringify(dataResp.findings),
+      };
+      setMessages([...messages, dgrMsg]);
     }
 
-    setProcessing(false);
+    setProcessing("");
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -86,11 +136,11 @@ const ChatWindow = () => {
       const token = user?.active_token?.token || "";
       if (token) {
         setLoading(true);
-        const response = await auditSearch(token, {});
+        const response = await auditSearch(token, { limit: 50 });
 
         const messages_: ChatMessage[] = response.events.map((event: any) => {
           const message: ChatMessage = {
-            hash: event.envelope.hash,
+            hash: event.hash,
             type: event.envelope.event.event_type,
             context: event.envelope.event.event_context,
             input: event.envelope.event.event_input,
@@ -105,8 +155,11 @@ const ChatWindow = () => {
       }
     };
 
-    loadSearchData();
-  }, [user]);
+    if (authenticated && !loading && !processing) {
+      console.log("load audit logs");
+      loadSearchData();
+    }
+  }, [authenticated]);
 
   return (
     <Stack width="100%" height="100%">
@@ -118,7 +171,7 @@ const ChatWindow = () => {
           >
             Welcome to Pangea Chat.
           </Typography>
-          <Stack width="100%">
+          <Stack width="100%" sx={{ position: "relative" }}>
             <ChatScroller />
             <Stack
               direction="row"
@@ -143,13 +196,38 @@ const ChatWindow = () => {
                 multiline
                 maxRows={3}
                 sx={{ width: "calc(100% - 48px)" }}
-                disabled={processing}
+                disabled={loading || !!processing}
                 onChange={handleChange}
               />
-              <IconButton onClick={handleSubmit} disabled={processing}>
+              <IconButton
+                onClick={handleSubmit}
+                disabled={loading || !!processing}
+              >
                 <SendIcon />
               </IconButton>
             </Stack>
+            {!!processing && (
+              <Stack
+                direction="row"
+                gap={2}
+                alignItems="center"
+                sx={{
+                  position: "absolute",
+                  bottom: "50px",
+                  background: Colors.background.paper,
+                  borderRadius: "10px",
+                  padding: "12px 20px",
+                  opacity: "0.8",
+                  alignSelf: "center",
+                }}
+              >
+                <Typography variant="body2">{processing}</Typography>
+                <CircularProgress
+                  size="20px"
+                  sx={{ color: Colors.secondary }}
+                />
+              </Stack>
+            )}
           </Stack>
         </Stack>
       </Paper>

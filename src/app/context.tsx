@@ -1,3 +1,4 @@
+import { cloneDeep } from "lodash";
 import {
   FC,
   ReactNode,
@@ -5,13 +6,14 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 
 export interface ChatContextProps {
   loading: boolean;
-  processing: boolean;
+  processing: string;
   systemPrompt: string;
   userPrompt: string;
   messages: ChatMessage[];
@@ -21,11 +23,10 @@ export interface ChatContextProps {
   auditPanelOpen: boolean;
   loginOpen: boolean;
   setLoading: (value: boolean) => void;
-  setProcessing: (value: boolean) => void;
+  setProcessing: (value: string) => void;
   setSystemPrompt: (value: string) => void;
   setUserPrompt: (value: string) => void;
   setMessages: (msgs: ChatMessage[]) => void;
-  addMessage: (msg: ChatMessage) => void;
   setPromptGuardEnabled: (value: boolean) => void;
   setDataGuardEnabled: (value: boolean) => void;
   setSidePanelOpen: (value: boolean) => void;
@@ -35,7 +36,7 @@ export interface ChatContextProps {
 
 const ChatContext = createContext<ChatContextProps>({
   loading: false,
-  processing: false,
+  processing: "",
   systemPrompt: "",
   userPrompt: "",
   messages: [],
@@ -49,7 +50,6 @@ const ChatContext = createContext<ChatContextProps>({
   setSystemPrompt: () => {},
   setUserPrompt: () => {},
   setMessages: () => {},
-  addMessage: () => {},
   setPromptGuardEnabled: () => {},
   setDataGuardEnabled: () => {},
   setSidePanelOpen: () => {},
@@ -65,8 +65,8 @@ export interface ChatMessage {
   hash: string;
   type: string;
   context?: any;
-  input: string;
-  output: any;
+  input?: string;
+  output?: any;
   findings?: any;
   malicious_count?: number;
 }
@@ -78,7 +78,7 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
   const mounted = useRef(false);
 
   const [loading, setLoading] = useState(false);
-  const [processing, setProcessing] = useState(false);
+  const [processing, setProcessing] = useState("");
   const [systemPrompt, setSystemPrompt] = useState("");
   const [userPrompt, setUserPrompt] = useState("");
   const [promptGuardEnabled, setPromptGuardEnabled] = useState(true);
@@ -87,10 +87,6 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
   const [auditPanelOpen, setAuditPanelOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-
-  const addMessage = useCallback((msg: ChatMessage) => {
-    setMessages([...messages, { ...msg }]);
-  }, []);
 
   useEffect(() => {
     if (!mounted.current) {
@@ -116,34 +112,55 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
     localStorage.setItem(USER_PROMPT_KEY, userPrompt);
   }, [userPrompt]);
 
+  const memoData = useMemo(
+    () => ({
+      loading,
+      processing,
+      systemPrompt,
+      userPrompt,
+      messages,
+      promptGuardEnabled,
+      dataGuardEnabled,
+      sidePanelOpen,
+      auditPanelOpen,
+      loginOpen,
+      setLoading,
+      setProcessing,
+      setSystemPrompt,
+      setUserPrompt,
+      setMessages,
+      setPromptGuardEnabled,
+      setDataGuardEnabled,
+      setSidePanelOpen,
+      setAuditPanelOpen,
+      setLoginOpen,
+    }),
+    [
+      loading,
+      processing,
+      systemPrompt,
+      userPrompt,
+      messages,
+      promptGuardEnabled,
+      dataGuardEnabled,
+      sidePanelOpen,
+      auditPanelOpen,
+      loginOpen,
+      setLoading,
+      setProcessing,
+      setSystemPrompt,
+      setUserPrompt,
+      setMessages,
+      setPromptGuardEnabled,
+      setDataGuardEnabled,
+      setSidePanelOpen,
+      setAuditPanelOpen,
+      setLoginOpen,
+    ],
+  );
+
   return (
-    <ChatContext.Provider
-      value={{
-        loading,
-        processing,
-        systemPrompt,
-        userPrompt,
-        messages,
-        promptGuardEnabled,
-        dataGuardEnabled,
-        sidePanelOpen,
-        auditPanelOpen,
-        loginOpen,
-        setLoading,
-        setProcessing,
-        setSystemPrompt,
-        setUserPrompt,
-        setMessages,
-        addMessage,
-        setPromptGuardEnabled,
-        setDataGuardEnabled,
-        setSidePanelOpen,
-        setAuditPanelOpen,
-        setLoginOpen,
-      }}
-    >
-      {children}
-    </ChatContext.Provider>
+    <ChatContext.Provider value={memoData}>{children}</ChatContext.Provider>
   );
 };
 

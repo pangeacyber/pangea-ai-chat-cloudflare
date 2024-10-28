@@ -32,6 +32,16 @@ export async function auditLogRequest(data: any) {
   }
 }
 
+export async function auditSearchRequest(data: any) {
+  const url = getUrl("audit", "v1/search");
+
+  const { success, response } = await postRequest(url, data);
+
+  if (!success) {
+    console.log("AUDIT SEARCH ERROR:", response.result.errors);
+  }
+}
+
 export async function postRequest(
   url: string,
   body: any,

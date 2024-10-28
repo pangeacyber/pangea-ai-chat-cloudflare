@@ -2,6 +2,8 @@ import { Avatar, Button, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useAuth } from "@pangeacyber/react-auth";
 
+import { useChatContext } from "@src/app/context";
+
 const LoginContainer = styled(Stack)(({ theme }) => ({
   marginLeft: "20px",
   marginBottom: "20px",
@@ -13,9 +15,17 @@ const LoginContainer = styled(Stack)(({ theme }) => ({
 
 const LoginWidget = () => {
   const { authenticated, user, login, logout } = useAuth();
+  const { setMessages, setUserPrompt, setSystemPrompt } = useChatContext();
   const firstLetter = Array.from(
     user?.profile?.first_name || user?.email || " ",
   )[0];
+
+  const handleLogout = () => {
+    logout();
+    setMessages([]);
+    setSystemPrompt("");
+    setUserPrompt("");
+  };
 
   if (!authenticated) {
     return (
@@ -45,7 +55,7 @@ const LoginWidget = () => {
         <Button variant="outlined" sx={{ width: "50%" }}>
           Console
         </Button>
-        <Button variant="outlined" sx={{ width: "50%" }} onClick={logout}>
+        <Button variant="outlined" sx={{ width: "50%" }} onClick={handleLogout}>
           Sign out
         </Button>
       </Stack>

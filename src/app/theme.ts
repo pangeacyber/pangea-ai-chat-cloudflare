@@ -36,6 +36,7 @@ const PangeaDark = () => {
       },
       body2: {
         color: Colors.text.secondary,
+        lineHeight: 1.5,
       },
     },
     palette: {

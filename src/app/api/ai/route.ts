@@ -5,7 +5,11 @@ import {
   Message,
 } from "@aws-sdk/client-bedrock-runtime";
 
-import { auditLogRequest, validateToken } from "../requests";
+import {
+  auditLogRequest,
+  auditSearchRequest,
+  validateToken,
+} from "../requests";
 
 const TEMP = 0.5;
 const MAX_TOKENS = 512;
@@ -36,6 +40,17 @@ export async function POST(request: NextRequest) {
       content: [{ text: body.userPrompt }],
     },
   ];
+
+  // const dt = new Date();
+  // dt.setDate(dt.getDate() - 1);
+  // const limitSearch = {
+  //   limit: 1,
+  //   end: dt.toISOString(),
+  //   search_restriction: { actor: [username] },
+  // }
+
+  // const searchResp = await auditSearchRequest(limitSearch);
+  // console.log("limit search", searchResp);
 
   try {
     const response = await client.send(

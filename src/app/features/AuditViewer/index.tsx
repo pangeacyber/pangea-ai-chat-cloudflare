@@ -6,13 +6,16 @@ import {
   AuditLogViewerProps,
   AuditLogViewer,
 } from "@pangeacyber/react-mui-audit-log-viewer";
+import { useAuth } from "@pangeacyber/react-auth";
 
 import { Colors } from "@app/theme";
 import { useChatContext } from "@app/context";
 
 const AuditViewer = () => {
   const theme = useTheme();
-  const { sidePanelOpen, auditPanelOpen, setAuditPanelOpen } = useChatContext();
+  const { authenticated } = useAuth();
+  const { sidePanelOpen, auditPanelOpen, setAuditPanelOpen, setLoginOpen } =
+    useChatContext();
 
   const handleSearch = async (body: Audit.SearchRequest) => {
     // Perform search logic here
@@ -36,12 +39,21 @@ const AuditViewer = () => {
     return response;
   };
 
+  const handleHandleClick = () => {
+    if (!authenticated) {
+      setLoginOpen(true);
+      return;
+    }
+
+    setAuditPanelOpen(!auditPanelOpen);
+  };
+
   return (
     <Stack width="100%">
       <Stack direction="row" justifyContent="center">
         <DragHandle
           fontSize="small"
-          onClick={() => setAuditPanelOpen(!auditPanelOpen)}
+          onClick={handleHandleClick}
           sx={{ cursor: "pointer", color: Colors.icons }}
         />
       </Stack>

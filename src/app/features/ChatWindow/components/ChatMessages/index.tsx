@@ -14,8 +14,7 @@ interface DataGuardProps {
 }
 
 interface PromptGuardProps {
-  verdict: string;
-  confidence: string;
+  findings: string;
 }
 
 interface LlmMessageProps {
@@ -56,14 +55,14 @@ export const LlmResponse: FC<LlmMessageProps> = ({ message }) => {
     <Stack
       direction="row"
       justifyContent="flex-start"
-      gap={1}
+      gap={2}
       sx={{
         margin: "24px 100px 24px 0",
         pre: {
           margin: "0",
           fontFamily: "inherit",
-          fontSize: "12px",
-          lineHeight: "16px",
+          fontSize: "14px",
+          lineHeight: "18px",
           whiteSpace: "break-spaces",
         },
       }}
@@ -77,6 +76,34 @@ export const LlmResponse: FC<LlmMessageProps> = ({ message }) => {
 };
 
 export const DataGuardMessage: FC<DataGuardProps> = ({ findings }) => {
+  const findingsJSON = JSON.parse(findings);
+  const malicous = findingsJSON?.malicious_count || 0;
+  // const artifacts = findingsJSON?.artifact_count || 0;
+  const redacted = findingsJSON?.security_issues?.redact_rule_match_count || 0;
+  // const ips = findingsJSON?.security_issues?.malicious_ip_count || 0;
+  // const domains = findingsJSON?.security_issues?.malicious_domain_count || 0;
+  // const urls = findingsJSON?.security_issues?.malicious_url_count || 0;
+  const emails =
+    findingsJSON?.security_issues?.compromised_email_addresses || 0;
+
+  let result = "Findings: ";
+
+  if (redacted) {
+    result += `${redacted} item${redacted > 1 ? "s" : ""} redacted`;
+  }
+
+  if (malicous) {
+    result += `${malicous} malicous item${malicous > 1 ? "s" : ""}`;
+  }
+
+  if (emails) {
+    result += `${emails} compromised email${emails > 1 ? "s" : ""}`;
+  }
+
+  if (!(redacted || malicous || emails)) {
+    result += "None";
+  }
+
   return (
     <Stack
       direction="row"
@@ -97,15 +124,18 @@ export const DataGuardMessage: FC<DataGuardProps> = ({ findings }) => {
       >
         Data Guard
       </Typography>
-      <Typography variant="body2">{findings}</Typography>
+      <Typography variant="body2">{result}</Typography>
     </Stack>
   );
 };
 
-export const PromptGuardMessage: FC<PromptGuardProps> = ({
-  verdict,
-  confidence,
-}) => {
+export const PromptGuardMessage: FC<PromptGuardProps> = ({ findings }) => {
+  const findingsJSON = JSON.parse(findings);
+  const verdict = findingsJSON?.detected ? `Malicious` : "Benign";
+  const confidence = findingsJSON?.confidence
+    ? `${findingsJSON.confidence}%`
+    : "";
+
   return (
     <Stack
       direction="row"
@@ -119,7 +149,7 @@ export const PromptGuardMessage: FC<PromptGuardProps> = ({
         background: Colors.card,
       }}
     >
-      <Stack direction="row" alignItems="center">
+      <Stack direction="row" alignItems="center" gap={1}>
         <MediationOutlined sx={{ color: Colors.secondary }} />
         <Typography
           variant="body1"
