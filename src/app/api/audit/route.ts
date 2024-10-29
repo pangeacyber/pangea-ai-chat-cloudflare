@@ -28,10 +28,10 @@ export async function POST(request: NextRequest) {
     case "download":
       endpoint = "download_results";
       break;
-    // case "log":
-    //   body.event.actor = username;
-    //   endpoint = "log";
-    //   break;
+    case "log":
+      body.event.actor = username;
+      endpoint = "log";
+      break;
   }
 
   if (!endpoint) {
