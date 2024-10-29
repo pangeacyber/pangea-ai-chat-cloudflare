@@ -41,12 +41,13 @@ export async function POST(request: NextRequest) {
     },
   ];
 
-  // const dt = new Date();
-  // dt.setDate(dt.getDate() - 1);
+  // const dt = new Date("2024-01-01");
+  // const today = `${dt.getFullYear}-${dt.getMonth().toString().padStart(2, '0')}-${dt.getDate().toString().padStart(2, '0')}T07:00:00.000Z`;
+
   // const limitSearch = {
   //   limit: 1,
-  //   end: dt.toISOString(),
-  //   search_restriction: { actor: [username] },
+  //   start: today,
+  //   // search_restriction: { actor: [username] },
   // }
 
   // const searchResp = await auditSearchRequest(limitSearch);

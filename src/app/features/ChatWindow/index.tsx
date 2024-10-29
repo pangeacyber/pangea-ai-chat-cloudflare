@@ -11,6 +11,7 @@ import { useTheme } from "@mui/material/styles";
 import SendIcon from "@mui/icons-material/Send";
 import { useAuth } from "@pangeacyber/react-auth";
 
+import { DAILY_MAX_MESSAGES } from "@src/const";
 import { useChatContext, ChatMessage } from "@src/app/context";
 import {
   auditSearch,
@@ -41,8 +42,6 @@ const ChatWindow = () => {
     dataGuardEnabled,
     systemPrompt,
     userPrompt,
-    // messages,
-    // setMessages,
     setProcessing,
     setUserPrompt,
     setLoading,
@@ -50,13 +49,16 @@ const ChatWindow = () => {
   } = useChatContext();
   const { authenticated, user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [remaining, setRemaining] = useState(DAILY_MAX_MESSAGES);
 
   const handleSubmit = async () => {
+    // require authentication
     if (!authenticated) {
       setLoginOpen(true);
       return;
     }
 
+    // don't accept empty prompts
     if (!userPrompt) {
       return;
     }
@@ -123,6 +125,9 @@ const ChatWindow = () => {
     const dataGuardMessages: ChatMessage[] = [];
     let llmResponse = await sendUserMessage(token, llmUserPrompt, systemPrompt);
 
+    // decrement daily remaining count
+    setRemaining((curVal) => curVal - 1);
+
     if (dataGuardEnabled) {
       setProcessing("Checking LLM response with AI Guard");
       const dataResp = await callResponseDataGuard(token, llmResponse);
@@ -166,6 +171,24 @@ const ChatWindow = () => {
       const token = user?.active_token?.token || "";
       if (token) {
         setLoading(true);
+
+        //*************** */
+        // TODO: move to shared function, and use in ai request as well
+        // daily limit search
+        const dt = new Date();
+        const today = `${dt.getUTCFullYear()}-${(dt.getUTCMonth() + 1).toString().padStart(2, "0")}-${dt.getUTCDate().toString().padStart(2, "0")}T07:00:00Z`;
+
+        const limitSearch = {
+          query: "event_type:llm_response",
+          limit: 1,
+          start: today,
+        };
+
+        const searchResp = await auditSearch(token, limitSearch);
+        const count = searchResp?.count || 20;
+        setRemaining(DAILY_MAX_MESSAGES - count);
+        //*************** */
+
         const response = await auditSearch(token, { limit: 50 });
 
         const messages_: ChatMessage[] = response.events.map((event: any) => {
@@ -211,7 +234,7 @@ const ChatWindow = () => {
               justifyContent="space-between"
               sx={{
                 width: "calc(100% - 40px)",
-                margin: "20px",
+                margin: "20px 20px 8px 20px",
                 padding: "4px 8px 4px 16px",
                 border: `1px solid ${theme.palette.divider}`,
                 borderRadius: "25px",
@@ -233,11 +256,12 @@ const ChatWindow = () => {
               />
               <IconButton
                 onClick={handleSubmit}
-                disabled={loading || !!processing}
+                disabled={loading || !!processing || remaining <= 0}
               >
                 <SendIcon />
               </IconButton>
             </Stack>
+
             {!!processing && (
               <Stack
                 direction="row"
@@ -260,6 +284,20 @@ const ChatWindow = () => {
                 />
               </Stack>
             )}
+          </Stack>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="center"
+            mb="12px"
+          >
+            <Typography
+              variant="body2"
+              sx={{ fontSize: "12px", lineHeight: "20px" }}
+            >
+              Message count: {remaining} remaining | You can send{" "}
+              {DAILY_MAX_MESSAGES} messages a day
+            </Typography>
           </Stack>
         </Stack>
       </Paper>

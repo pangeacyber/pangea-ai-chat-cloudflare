@@ -19,14 +19,13 @@ export async function POST(request: NextRequest) {
   let endpoint = "";
   switch (action) {
     case "search":
+      body.verbose = false;
+      body.return_context = false;
       body.search_restriction = { actor: [username] };
       endpoint = "search";
       break;
     case "page":
       endpoint = "results";
-      break;
-    case "download":
-      endpoint = "download_results";
       break;
     case "log":
       body.event.actor = username;

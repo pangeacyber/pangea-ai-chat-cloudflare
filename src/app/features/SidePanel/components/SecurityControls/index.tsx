@@ -28,7 +28,7 @@ const SecurityControls = () => {
         <ServiceToggle
           icon={<MediationOutlined />}
           name="Prompt Guard"
-          link="#"
+          link="https://pangea.cloud/docs/api/prompt-guard"
           active={promptGuardEnabled}
           type="toggle"
           changeHandler={() => {
@@ -39,7 +39,7 @@ const SecurityControls = () => {
         <ServiceToggle
           icon={<ReviewsOutlined />}
           name="AI Guard"
-          link="#"
+          link="https://pangea.cloud/docs/api/data-guard"
           active={dataGuardEnabled}
           type="toggle"
           changeHandler={() => {
@@ -52,7 +52,7 @@ const SecurityControls = () => {
             <LockOutlined color={auditPanelOpen ? "secondary" : "primary"} />
           }
           name="Secure Audit Log"
-          link="#"
+          link="https://pangea.cloud/docs/api/audit"
           active={true}
           type="link"
           changeHandler={() => {
