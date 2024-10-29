@@ -34,7 +34,7 @@ const ChatScroller: FC<Props> = ({ messages }) => {
 
   const messageContent = useMemo(() => {
     return (
-      <Stack>
+      <Stack sx={{ maxWidth: "700px", margin: "0 auto" }}>
         {messages.map((message: ChatMessage, idx: number) => {
           switch (message.type) {
             case "llm_response":

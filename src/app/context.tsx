@@ -73,7 +73,9 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
 
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState("");
-  const [systemPrompt, setSystemPrompt] = useState("");
+  const [systemPrompt, setSystemPrompt] = useState(
+    "You're a helpful assistant.",
+  );
   const [userPrompt, setUserPrompt] = useState("");
   const [promptGuardEnabled, setPromptGuardEnabled] = useState(true);
   const [dataGuardEnabled, setDataGuardEnabled] = useState(true);

@@ -1,6 +1,5 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import {
-  Box,
   CircularProgress,
   IconButton,
   InputBase,
@@ -95,10 +94,18 @@ const ChatWindow = () => {
         output: JSON.stringify(promptResp),
       };
       setMessages((prevMessages) => [...prevMessages, pgMsg]);
+
+      // don't send to the llm if prompt is malicious
+      if (promptResp?.detected) {
+        setProcessing("");
+        return;
+      }
     }
 
+    let llmUserPrompt = userPrompt;
+
     if (dataGuardEnabled) {
-      setProcessing("Checking user prompt with Data Guard");
+      setProcessing("Checking user prompt with AI Guard");
 
       const dataResp = await callInputDataGuard(token, userPrompt);
       const dgiMsg: ChatMessage = {
@@ -107,33 +114,51 @@ const ChatWindow = () => {
         findings: JSON.stringify(dataResp.findings),
       };
       setMessages((prevMessages) => [...prevMessages, dgiMsg]);
+
+      llmUserPrompt = dataResp.redacted_prompt;
     }
 
     setProcessing("Waiting for LLM response");
-    const llmResponse = await sendUserMessage(token, userPrompt, systemPrompt);
-    const llmMsg: ChatMessage = {
-      hash: hashCode(llmResponse),
-      type: "llm_response",
-      output: llmResponse,
-    };
-    setMessages((prevMessages) => [...prevMessages, llmMsg]);
+
+    const dataGuardMessages: ChatMessage[] = [];
+    let llmResponse = await sendUserMessage(token, llmUserPrompt, systemPrompt);
 
     if (dataGuardEnabled) {
-      setProcessing("Checking LLM response with Data Guard");
+      setProcessing("Checking LLM response with AI Guard");
       const dataResp = await callResponseDataGuard(token, llmResponse);
       const dgrMsg: ChatMessage = {
         hash: hashCode(JSON.stringify(dataResp)),
         type: "data_guard",
         findings: JSON.stringify(dataResp.findings),
       };
-      setMessages((prevMessages) => [...prevMessages, dgrMsg]);
+      dataGuardMessages.push(dgrMsg);
+
+      llmResponse = dataResp.redacted_prompt;
     }
 
+    const llmMsg: ChatMessage = {
+      hash: hashCode(llmResponse),
+      type: "llm_response",
+      output: llmResponse,
+    };
+
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      llmMsg,
+      ...dataGuardMessages,
+    ]);
     setProcessing("");
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setUserPrompt(e.currentTarget.value);
+  };
+
+  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
   };
 
   useEffect(() => {
@@ -204,6 +229,7 @@ const ChatWindow = () => {
                 sx={{ width: "calc(100% - 48px)" }}
                 disabled={loading || !!processing}
                 onChange={handleChange}
+                onKeyDown={handleKeyPress}
               />
               <IconButton
                 onClick={handleSubmit}

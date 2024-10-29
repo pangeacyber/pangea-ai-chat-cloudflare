@@ -51,7 +51,12 @@ const LoginWidget = () => {
         </Stack>
       </Stack>
       <Stack direction="row" gap={1}>
-        <Button variant="outlined" sx={{ width: "50%" }}>
+        <Button
+          variant="outlined"
+          sx={{ width: "50%" }}
+          target="_new"
+          href="https://console.pangea.cloud"
+        >
           Console
         </Button>
         <Button variant="outlined" sx={{ width: "50%" }} onClick={handleLogout}>

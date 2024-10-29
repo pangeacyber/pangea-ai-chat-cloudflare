@@ -5,7 +5,7 @@ import CollapsablePanel from "@app/components/CollapsablePanel";
 import { useChatContext } from "@src/app/context";
 
 const SystemPrompt = () => {
-  const { systemPrompt, setSystemPrompt, setLoginOpen } = useChatContext();
+  const { systemPrompt, setSystemPrompt } = useChatContext();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSystemPrompt(e.currentTarget.value);
@@ -24,7 +24,7 @@ const SystemPrompt = () => {
           onChange={handleChange}
           sx={{
             width: "100%",
-            height: "60px",
+            height: "100%",
             marginTop: "12px",
             padding: "0 20px",
           }}

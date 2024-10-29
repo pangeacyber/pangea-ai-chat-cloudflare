@@ -38,7 +38,7 @@ const SecurityControls = () => {
 
         <ServiceToggle
           icon={<ReviewsOutlined />}
-          name="Data Guard"
+          name="AI Guard"
           link="#"
           active={dataGuardEnabled}
           type="toggle"

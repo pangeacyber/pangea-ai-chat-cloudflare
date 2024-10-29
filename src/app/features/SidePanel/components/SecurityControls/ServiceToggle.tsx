@@ -27,6 +27,7 @@ const ServiceToggle: FC<Props> = ({
   return (
     <Stack
       direction="row"
+      alignItems="center"
       justifyContent="space-between"
       gap={1}
       padding="10px 20px"
@@ -72,19 +73,21 @@ const ServiceToggle: FC<Props> = ({
         </Stack>
       </Stack>
       {type === "link" ? (
-        <Button
-          variant="outlined"
-          color="secondary"
-          size="small"
-          onClick={() => changeHandler()}
-        >
-          {linkLabel || "View"}
-        </Button>
+        <Box>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => changeHandler()}
+          >
+            {linkLabel || "View"}
+          </Button>
+        </Box>
       ) : (
         <Switch
           color="secondary"
           checked={active}
           onChange={() => changeHandler()}
+          sx={{ marginRight: "-12px" }}
         />
       )}
     </Stack>
