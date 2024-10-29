@@ -34,6 +34,9 @@ const PangeaDark = () => {
         color: "transparent",
         filter: "brightness(120%)",
       },
+      h6: {
+        fontSize: "1rem",
+      },
       body2: {
         color: Colors.text.secondary,
         lineHeight: 1.5,
@@ -62,6 +65,22 @@ const PangeaDark = () => {
       MuiButtonBase: {
         defaultProps: {
           disableRipple: true,
+        },
+        styleOverrides: {
+          root: {
+            "&.MuiTab-root.Mui-selected": {
+              color: Colors.secondary,
+            },
+          },
+        },
+      },
+      MuiTabs: {
+        styleOverrides: {
+          root: {
+            ".MuiTabs-indicator": {
+              backgroundColor: Colors.secondary,
+            },
+          },
         },
       },
       MuiButton: {
@@ -157,6 +176,22 @@ const PangeaDark = () => {
                 },
               },
             ],
+          },
+        },
+      },
+      // styles for Audit Log Viewer
+      MuiGrid: {
+        styleOverrides: {
+          root: {
+            ".MuiDataGrid-columnHeaderTitle": {
+              fontFamily: "Inter",
+            },
+            ".MuiDataGrid-row .MuiDataGrid-cell": {
+              borderBottom: `1px solid ${Colors.borders}`,
+            },
+            ".MuiButtonGroup-groupedOutlined.MuiButtonGroup-lastButton": {
+              borderColor: Colors.text.secondary,
+            },
           },
         },
       },

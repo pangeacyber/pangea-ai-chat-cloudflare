@@ -1,5 +1,11 @@
 import { Collapse, IconButton, Stack, Typography } from "@mui/material";
-import { Close, DragHandle, LockOutlined } from "@mui/icons-material";
+import {
+  Close,
+  DragHandle,
+  ExpandLess,
+  ExpandMore,
+  LockOutlined,
+} from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
 import { Audit, AuditLogViewer } from "@pangeacyber/react-mui-audit-log-viewer";
 import { useAuth } from "@pangeacyber/react-auth";
@@ -99,10 +105,12 @@ const AuditViewer = () => {
     setAuditPanelOpen(!auditPanelOpen);
   };
 
+  const Icon = auditPanelOpen ? ExpandMore : ExpandLess;
+
   return (
     <Stack width="100%">
       <Stack direction="row" justifyContent="center">
-        <DragHandle
+        <Icon
           fontSize="small"
           onClick={handleHandleClick}
           sx={{ cursor: "pointer", color: Colors.icons }}
