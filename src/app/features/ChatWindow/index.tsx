@@ -42,14 +42,15 @@ const ChatWindow = () => {
     dataGuardEnabled,
     systemPrompt,
     userPrompt,
-    messages,
-    setMessages,
+    // messages,
+    // setMessages,
     setProcessing,
     setUserPrompt,
     setLoading,
     setLoginOpen,
   } = useChatContext();
   const { authenticated, user } = useAuth();
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const handleSubmit = async () => {
     if (!authenticated) {
@@ -77,7 +78,7 @@ const ChatWindow = () => {
       type: "user_prompt",
       input: userPrompt,
     };
-    setMessages([...messages, promptMsg]);
+    setMessages((prevMessages) => [...prevMessages, promptMsg]);
     setUserPrompt("");
 
     if (promptGuardEnabled) {
@@ -89,7 +90,7 @@ const ChatWindow = () => {
         type: "prompt_guard",
         output: JSON.stringify(promptResp),
       };
-      setMessages([...messages, pgMsg]);
+      setMessages((prevMessages) => [...prevMessages, pgMsg]);
     }
 
     if (dataGuardEnabled) {
@@ -101,7 +102,7 @@ const ChatWindow = () => {
         type: "data_guard",
         findings: JSON.stringify(dataResp.findings),
       };
-      setMessages([...messages, dgiMsg]);
+      setMessages((prevMessages) => [...prevMessages, dgiMsg]);
     }
 
     setProcessing("Waiting for LLM response");
@@ -111,7 +112,7 @@ const ChatWindow = () => {
       type: "llm_response",
       output: llmResponse,
     };
-    setMessages([...messages, llmMsg]);
+    setMessages((prevMessages) => [...prevMessages, llmMsg]);
 
     if (dataGuardEnabled) {
       setProcessing("Checking LLM response with Data Guard");
@@ -121,7 +122,7 @@ const ChatWindow = () => {
         type: "data_guard",
         findings: JSON.stringify(dataResp.findings),
       };
-      setMessages([...messages, dgrMsg]);
+      setMessages((prevMessages) => [...prevMessages, dgrMsg]);
     }
 
     setProcessing("");
@@ -156,8 +157,9 @@ const ChatWindow = () => {
     };
 
     if (authenticated && !loading && !processing) {
-      console.log("load audit logs");
       loadSearchData();
+    } else if (!authenticated && !loading) {
+      setMessages([]);
     }
   }, [authenticated]);
 
@@ -172,7 +174,7 @@ const ChatWindow = () => {
             Welcome to Pangea Chat.
           </Typography>
           <Stack width="100%" sx={{ position: "relative" }}>
-            <ChatScroller />
+            <ChatScroller messages={messages} />
             <Stack
               direction="row"
               gap={1}

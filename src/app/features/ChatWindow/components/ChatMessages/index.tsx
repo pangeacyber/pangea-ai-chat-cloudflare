@@ -70,7 +70,9 @@ export const LlmResponse: FC<LlmMessageProps> = ({ message }) => {
       <Box width="32px">
         <PangeaLogo size={32} />
       </Box>
-      <pre>{message}</pre>
+      <Stack justifyContent="center">
+        <pre>{message}</pre>
+      </Stack>
     </Stack>
   );
 };

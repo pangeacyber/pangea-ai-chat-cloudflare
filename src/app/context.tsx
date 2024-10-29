@@ -14,7 +14,6 @@ export interface ChatContextProps {
   processing: string;
   systemPrompt: string;
   userPrompt: string;
-  messages: ChatMessage[];
   promptGuardEnabled: boolean;
   dataGuardEnabled: boolean;
   sidePanelOpen: boolean;
@@ -24,7 +23,6 @@ export interface ChatContextProps {
   setProcessing: (value: string) => void;
   setSystemPrompt: (value: string) => void;
   setUserPrompt: (value: string) => void;
-  setMessages: (msgs: ChatMessage[]) => void;
   setPromptGuardEnabled: (value: boolean) => void;
   setDataGuardEnabled: (value: boolean) => void;
   setSidePanelOpen: (value: boolean) => void;
@@ -37,7 +35,6 @@ const ChatContext = createContext<ChatContextProps>({
   processing: "",
   systemPrompt: "",
   userPrompt: "",
-  messages: [],
   promptGuardEnabled: true,
   dataGuardEnabled: true,
   sidePanelOpen: true,
@@ -47,7 +44,6 @@ const ChatContext = createContext<ChatContextProps>({
   setProcessing: () => {},
   setSystemPrompt: () => {},
   setUserPrompt: () => {},
-  setMessages: () => {},
   setPromptGuardEnabled: () => {},
   setDataGuardEnabled: () => {},
   setSidePanelOpen: () => {},
@@ -84,7 +80,6 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
   const [sidePanelOpen, setSidePanelOpen] = useState(true);
   const [auditPanelOpen, setAuditPanelOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
     if (!mounted.current) {
@@ -116,7 +111,6 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
       processing,
       systemPrompt,
       userPrompt,
-      messages,
       promptGuardEnabled,
       dataGuardEnabled,
       sidePanelOpen,
@@ -126,7 +120,6 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
       setProcessing,
       setSystemPrompt,
       setUserPrompt,
-      setMessages,
       setPromptGuardEnabled,
       setDataGuardEnabled,
       setSidePanelOpen,
@@ -138,7 +131,6 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
       processing,
       systemPrompt,
       userPrompt,
-      messages,
       promptGuardEnabled,
       dataGuardEnabled,
       sidePanelOpen,
@@ -148,7 +140,6 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
       setProcessing,
       setSystemPrompt,
       setUserPrompt,
-      setMessages,
       setPromptGuardEnabled,
       setDataGuardEnabled,
       setSidePanelOpen,

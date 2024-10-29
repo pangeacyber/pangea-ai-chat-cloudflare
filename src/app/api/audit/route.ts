@@ -22,10 +22,16 @@ export async function POST(request: NextRequest) {
       body.search_restriction = { actor: [username] };
       endpoint = "search";
       break;
-    case "log":
-      body.event.actor = username;
-      endpoint = "log";
+    case "page":
+      endpoint = "results";
       break;
+    case "download":
+      endpoint = "download_results";
+      break;
+    // case "log":
+    //   body.event.actor = username;
+    //   endpoint = "log";
+    //   break;
   }
 
   if (!endpoint) {

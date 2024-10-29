@@ -15,14 +15,13 @@ const LoginContainer = styled(Stack)(({ theme }) => ({
 
 const LoginWidget = () => {
   const { authenticated, user, login, logout } = useAuth();
-  const { setMessages, setUserPrompt, setSystemPrompt } = useChatContext();
+  const { setUserPrompt, setSystemPrompt } = useChatContext();
   const firstLetter = Array.from(
     user?.profile?.first_name || user?.email || " ",
   )[0];
 
   const handleLogout = () => {
     logout();
-    setMessages([]);
     setSystemPrompt("");
     setUserPrompt("");
   };

@@ -39,6 +39,9 @@ export async function auditSearchRequest(data: any) {
 
   if (!success) {
     console.log("AUDIT SEARCH ERROR:", response.result.errors);
+    return { error: response.result.errors };
+  } else {
+    return response.result;
   }
 }
 

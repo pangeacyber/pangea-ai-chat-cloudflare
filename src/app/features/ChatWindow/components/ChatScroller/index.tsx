@@ -15,9 +15,9 @@ interface Props {
   messages: ChatMessage[];
 }
 
-const ChatScroller = () => {
+const ChatScroller: FC<Props> = ({ messages }) => {
   const { user } = useAuth();
-  const { loading, auditPanelOpen, messages } = useChatContext();
+  const { loading, auditPanelOpen } = useChatContext();
   const scollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {

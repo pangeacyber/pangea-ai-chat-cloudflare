@@ -1,15 +1,3 @@
-// export function auditProxyRequest<request, response>(
-//   action: string
-// ): (req: request) => Promise<response> {
-//   return baseProxyRequest("audit", action);
-// }
-
-// export function dataGuardProxyRequest<request, response>(
-//   action: string
-// ): (req: request) => Promise<response> {
-//   return baseProxyRequest("data", action);
-// }
-
 export const dataGuardProxyRequest = async (
   token: string,
   body: any,

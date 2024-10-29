@@ -1,42 +1,93 @@
 import { Collapse, IconButton, Stack, Typography } from "@mui/material";
 import { Close, DragHandle, LockOutlined } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
-import {
-  Audit,
-  AuditLogViewerProps,
-  AuditLogViewer,
-} from "@pangeacyber/react-mui-audit-log-viewer";
+import { Audit, AuditLogViewer } from "@pangeacyber/react-mui-audit-log-viewer";
 import { useAuth } from "@pangeacyber/react-auth";
 
 import { Colors } from "@app/theme";
 import { useChatContext } from "@app/context";
+import { auditProxyRequest } from "@src/app/proxy";
+
+const visibilityModel: any = {
+  timestamp: true,
+  event_type: true,
+  event_input: true,
+  event_findings: true,
+};
+
+const schema: any = {
+  tamper_proofing: false,
+  fields: [
+    {
+      id: "timestamp",
+      name: "Timestamp",
+      size: 128,
+      type: "datetime",
+      required: true,
+    },
+    {
+      id: "event_type",
+      name: "Event Type",
+      required: true,
+    },
+    {
+      id: "event_input",
+      name: "Input",
+      required: true,
+    },
+    {
+      id: "event_output",
+      name: "Output",
+    },
+    {
+      id: "findings",
+      name: "Findings",
+      required: false,
+    },
+    {
+      id: "event_context",
+      name: "Context",
+      required: false,
+    },
+  ],
+};
 
 const AuditViewer = () => {
   const theme = useTheme();
-  const { authenticated } = useAuth();
+  const { authenticated, user } = useAuth();
   const { sidePanelOpen, auditPanelOpen, setAuditPanelOpen, setLoginOpen } =
     useChatContext();
 
   const handleSearch = async (body: Audit.SearchRequest) => {
-    // Perform search logic here
-    const response: Audit.SearchResponse = {
-      id: "test",
-      count: 0,
-      expires_at: "",
-      events: [],
-    };
-    return response;
+    const token = user?.active_token?.token || "";
+
+    if (!token) {
+      const response: Audit.SearchResponse = {
+        id: "none",
+        count: 0,
+        expires_at: "",
+        events: [],
+      };
+      return response;
+    } else {
+      return await auditProxyRequest(token, "search", body);
+    }
   };
 
   const handlePageChange = async (body: Audit.ResultRequest) => {
-    // Handle page change logic here
-    const response: Audit.SearchResponse = {
-      id: "test",
-      count: 0,
-      expires_at: "",
-      events: [],
-    };
-    return response;
+    const token = user?.active_token?.token || "";
+
+    if (!token) {
+      const response: Audit.SearchResponse = {
+        id: "test",
+        count: 0,
+        expires_at: "",
+        events: [],
+      };
+      return response;
+    } else {
+      return await auditProxyRequest(token, "page", body);
+    }
   };
 
   const handleHandleClick = () => {
@@ -85,8 +136,13 @@ const AuditViewer = () => {
           </Stack>
           <AuditLogViewer
             initialQuery=""
+            // @ts-ignore
             onSearch={handleSearch}
+            // @ts-ignore
             onPageChange={handlePageChange}
+            searchOnMount={false}
+            schema={schema}
+            visibilityModel={visibilityModel}
           />
         </Stack>
       </Collapse>
