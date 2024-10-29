@@ -58,6 +58,10 @@ const ChatWindow = () => {
       return;
     }
 
+    if (!userPrompt) {
+      return;
+    }
+
     const token = user?.active_token?.token || "";
 
     setProcessing("Logging user prompt");
