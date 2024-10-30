@@ -1,10 +1,18 @@
-import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  KeyboardEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   CircularProgress,
   IconButton,
   InputBase,
+  Modal,
   Paper,
   Stack,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
@@ -50,6 +58,8 @@ const ChatWindow = () => {
   const { authenticated, user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [remaining, setRemaining] = useState(DAILY_MAX_MESSAGES);
+  const [overlimit, setOverLimit] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async () => {
     // require authentication
@@ -59,7 +69,7 @@ const ChatWindow = () => {
     }
 
     // don't accept empty prompts
-    if (!userPrompt) {
+    if (!userPrompt || loading || !!processing || overlimit || remaining <= 0) {
       return;
     }
 
@@ -167,16 +177,32 @@ const ChatWindow = () => {
   };
 
   useEffect(() => {
+    setOverLimit(userPrompt.length + systemPrompt.length > 1500);
+  }, [userPrompt, systemPrompt]);
+
+  useEffect(() => {
+    if (!authenticated) {
+      setError("");
+    } else if (remaining <= 0) {
+      setError("Your daily quota has been exceeded");
+    } else if (overlimit) {
+      setError("Your prompt exceeds the maximum limit");
+    } else {
+      setError("");
+    }
+  }, [authenticated, remaining, overlimit]);
+
+  useEffect(() => {
     const loadSearchData = async () => {
       const token = user?.active_token?.token || "";
       if (token) {
         setLoading(true);
 
         //*************** */
-        // TODO: move to shared function, and use in ai request as well
-        // daily limit search
+        // TODO: move to shared function and use in ai request as well
+        // Daily limit search
         const dt = new Date();
-        const today = `${dt.getUTCFullYear()}-${(dt.getUTCMonth() + 1).toString().padStart(2, "0")}-${dt.getUTCDate().toString().padStart(2, "0")}T07:00:00Z`;
+        const today = "24hour";
 
         const limitSearch = {
           query: "event_type:llm_response",
@@ -185,7 +211,7 @@ const ChatWindow = () => {
         };
 
         const searchResp = await auditSearch(token, limitSearch);
-        const count = searchResp?.count || 20;
+        const count = searchResp?.count || 0;
         setRemaining(DAILY_MAX_MESSAGES - count);
         //*************** */
 
@@ -248,18 +274,24 @@ const ChatWindow = () => {
                 placeholder="What’s the weather today?"
                 size="small"
                 multiline
-                maxRows={3}
+                maxRows={2}
                 sx={{ width: "calc(100% - 48px)" }}
                 disabled={loading || !!processing}
                 onChange={handleChange}
                 onKeyDown={handleKeyPress}
               />
-              <IconButton
-                onClick={handleSubmit}
-                disabled={loading || !!processing || remaining <= 0}
-              >
-                <SendIcon />
-              </IconButton>
+              <Tooltip title={error} placement="top" color="warning">
+                <span>
+                  <IconButton
+                    onClick={handleSubmit}
+                    disabled={
+                      loading || !!processing || overlimit || remaining <= 0
+                    }
+                  >
+                    <SendIcon />
+                  </IconButton>
+                </span>
+              </Tooltip>
             </Stack>
 
             {!!processing && (
@@ -291,13 +323,15 @@ const ChatWindow = () => {
             justifyContent="center"
             mb="12px"
           >
-            <Typography
-              variant="body2"
-              sx={{ fontSize: "12px", lineHeight: "20px" }}
-            >
-              Message count: {remaining} remaining | You can send{" "}
-              {DAILY_MAX_MESSAGES} messages a day
-            </Typography>
+            {!loading && authenticated && (
+              <Typography
+                variant="body2"
+                sx={{ fontSize: "12px", lineHeight: "20px", height: "20px" }}
+              >
+                Message count: {remaining} remaining | You can send{" "}
+                {DAILY_MAX_MESSAGES} messages a day
+              </Typography>
+            )}
           </Stack>
         </Stack>
       </Paper>
