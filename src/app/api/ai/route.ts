@@ -10,6 +10,8 @@ import {
   auditSearchRequest,
   validateToken,
 } from "../requests";
+import { rateLimitQuery } from "@src/utils";
+import { DAILY_MAX_MESSAGES } from "@src/const";
 
 const TEMP = 0.5;
 const MAX_TOKENS = 512;
@@ -41,17 +43,20 @@ export async function POST(request: NextRequest) {
     },
   ];
 
-  // const dt = new Date("2024-01-01");
-  // const today = `${dt.getFullYear}-${dt.getMonth().toString().padStart(2, '0')}-${dt.getDate().toString().padStart(2, '0')}T07:00:00.000Z`;
+  const limitSearch = rateLimitQuery();
+  const result = await auditSearchRequest(limitSearch);
 
-  // const limitSearch = {
-  //   limit: 1,
-  //   start: today,
-  //   // search_restriction: { actor: [username] },
-  // }
+  if (body.userPrompt.length + (body?.systemPrompt?.length || 0) > 15000) {
+    return new Response(`{"error": "Maximum prompt size exceeded"}`, {
+      status: 400,
+    });
+  }
 
-  // const searchResp = await auditSearchRequest(limitSearch);
-  // console.log("limit search", searchResp);
+  if (result?.error || (result?.count || 0) >= DAILY_MAX_MESSAGES) {
+    return new Response(`{"error": "Daily limit exceeded"}`, {
+      status: 400,
+    });
+  }
 
   try {
     const response = await client.send(

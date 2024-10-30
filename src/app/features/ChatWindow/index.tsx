@@ -1,16 +1,12 @@
+import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import {
-  ChangeEvent,
-  KeyboardEvent,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import {
+  Alert,
+  Box,
   CircularProgress,
   IconButton,
   InputBase,
-  Modal,
   Paper,
+  Snackbar,
   Stack,
   Tooltip,
   Typography,
@@ -31,6 +27,7 @@ import {
 } from "./utils";
 import ChatScroller from "./components/ChatScroller";
 import { Colors } from "@src/app/theme";
+import { rateLimitQuery } from "@src/utils";
 
 function hashCode(str: string) {
   let hash = 0;
@@ -45,12 +42,10 @@ const ChatWindow = () => {
   const theme = useTheme();
   const {
     loading,
-    processing,
     promptGuardEnabled,
     dataGuardEnabled,
     systemPrompt,
     userPrompt,
-    setProcessing,
     setUserPrompt,
     setLoading,
     setLoginOpen,
@@ -59,7 +54,15 @@ const ChatWindow = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [remaining, setRemaining] = useState(DAILY_MAX_MESSAGES);
   const [overlimit, setOverLimit] = useState(false);
+  const [processing, setProcessing] = useState("");
   const [error, setError] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const processingError = (msg: string) => {
+    setError(msg);
+    setProcessing("");
+    setOpen(true);
+  };
 
   const handleSubmit = async () => {
     // require authentication
@@ -87,29 +90,39 @@ const ChatWindow = () => {
       },
     };
 
-    const logResp = await auditUserPrompt(token, logEvent);
-    const promptMsg: ChatMessage = {
-      hash: logResp.hash,
-      type: "user_prompt",
-      input: userPrompt,
-    };
-    setMessages((prevMessages) => [...prevMessages, promptMsg]);
-    setUserPrompt("");
+    try {
+      const logResp = await auditUserPrompt(token, logEvent);
+      const promptMsg: ChatMessage = {
+        hash: logResp.hash,
+        type: "user_prompt",
+        input: userPrompt,
+      };
+      setMessages((prevMessages) => [...prevMessages, promptMsg]);
+      setUserPrompt("");
+    } catch (err) {
+      processingError("User prompt logging failed, please try again");
+      return;
+    }
 
     if (promptGuardEnabled) {
       setProcessing("Checking user prompt with Prompt Guard");
 
-      const promptResp = await callPromptGuard(token, userPrompt, "");
-      const pgMsg: ChatMessage = {
-        hash: hashCode(JSON.stringify(promptResp)),
-        type: "prompt_guard",
-        output: JSON.stringify(promptResp),
-      };
-      setMessages((prevMessages) => [...prevMessages, pgMsg]);
+      try {
+        const promptResp = await callPromptGuard(token, userPrompt, "");
+        const pgMsg: ChatMessage = {
+          hash: hashCode(JSON.stringify(promptResp)),
+          type: "prompt_guard",
+          output: JSON.stringify(promptResp),
+        };
+        setMessages((prevMessages) => [...prevMessages, pgMsg]);
 
-      // don't send to the llm if prompt is malicious
-      if (promptResp?.detected) {
-        setProcessing("");
+        // don't send to the llm if prompt is malicious
+        if (promptResp?.detected) {
+          setProcessing("");
+          return;
+        }
+      } catch (err) {
+        processingError("Prompt Guard call failed, please try again");
         return;
       }
     }
@@ -119,36 +132,53 @@ const ChatWindow = () => {
     if (dataGuardEnabled) {
       setProcessing("Checking user prompt with AI Guard");
 
-      const dataResp = await callInputDataGuard(token, userPrompt);
-      const dgiMsg: ChatMessage = {
-        hash: hashCode(JSON.stringify(dataResp)),
-        type: "data_guard",
-        findings: JSON.stringify(dataResp.findings),
-      };
-      setMessages((prevMessages) => [...prevMessages, dgiMsg]);
+      try {
+        const dataResp = await callInputDataGuard(token, userPrompt);
+        const dgiMsg: ChatMessage = {
+          hash: hashCode(JSON.stringify(dataResp)),
+          type: "ai_guard",
+          findings: JSON.stringify(dataResp.findings),
+        };
+        setMessages((prevMessages) => [...prevMessages, dgiMsg]);
 
-      llmUserPrompt = dataResp.redacted_prompt;
+        llmUserPrompt = dataResp.redacted_prompt;
+      } catch (err) {
+        processingError("AI Guard call failed, please try again");
+        return;
+      }
     }
 
     setProcessing("Waiting for LLM response");
 
     const dataGuardMessages: ChatMessage[] = [];
-    let llmResponse = await sendUserMessage(token, llmUserPrompt, systemPrompt);
+    let llmResponse = "";
 
-    // decrement daily remaining count
-    setRemaining((curVal) => curVal - 1);
+    try {
+      llmResponse = await sendUserMessage(token, llmUserPrompt, systemPrompt);
+
+      // decrement daily remaining count
+      setRemaining((curVal) => curVal - 1);
+    } catch (err) {
+      processingError("LLM call failed, please try again");
+      return;
+    }
 
     if (dataGuardEnabled) {
       setProcessing("Checking LLM response with AI Guard");
-      const dataResp = await callResponseDataGuard(token, llmResponse);
-      const dgrMsg: ChatMessage = {
-        hash: hashCode(JSON.stringify(dataResp)),
-        type: "data_guard",
-        findings: JSON.stringify(dataResp.findings),
-      };
-      dataGuardMessages.push(dgrMsg);
 
-      llmResponse = dataResp.redacted_prompt;
+      try {
+        const dataResp = await callResponseDataGuard(token, llmResponse);
+        const dgrMsg: ChatMessage = {
+          hash: hashCode(JSON.stringify(dataResp)),
+          type: "ai_guard",
+          findings: JSON.stringify(dataResp.findings),
+        };
+        dataGuardMessages.push(dgrMsg);
+
+        llmResponse = dataResp.redacted_prompt;
+      } catch (err) {
+        processingError("AI Guard call failed, please try again");
+      }
     }
 
     const llmMsg: ChatMessage = {
@@ -176,6 +206,10 @@ const ChatWindow = () => {
     }
   };
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   useEffect(() => {
     setOverLimit(userPrompt.length + systemPrompt.length > 1500);
   }, [userPrompt, systemPrompt]);
@@ -185,10 +219,13 @@ const ChatWindow = () => {
       setError("");
     } else if (remaining <= 0) {
       setError("Your daily quota has been exceeded");
+      setOpen(true);
     } else if (overlimit) {
       setError("Your prompt exceeds the maximum limit");
+      setOpen(true);
     } else {
       setError("");
+      setOpen(false);
     }
   }, [authenticated, remaining, overlimit]);
 
@@ -198,23 +235,14 @@ const ChatWindow = () => {
       if (token) {
         setLoading(true);
 
-        //*************** */
-        // TODO: move to shared function and use in ai request as well
-        // Daily limit search
-        const dt = new Date();
-        const today = "24hour";
-
-        const limitSearch = {
-          query: "event_type:llm_response",
-          limit: 1,
-          start: today,
-        };
+        // Get LLM responses for the last 24-hours
+        const limitSearch = rateLimitQuery();
 
         const searchResp = await auditSearch(token, limitSearch);
         const count = searchResp?.count || 0;
         setRemaining(DAILY_MAX_MESSAGES - count);
-        //*************** */
 
+        // Load Chat history from audit log
         const response = await auditSearch(token, { limit: 50 });
 
         const messages_: ChatMessage[] = response.events.map((event: any) => {
@@ -229,6 +257,7 @@ const ChatWindow = () => {
           };
           return message;
         });
+
         setMessages(messages_.reverse());
         setLoading(false);
       }
@@ -259,6 +288,7 @@ const ChatWindow = () => {
               alignItems="center"
               justifyContent="space-between"
               sx={{
+                position: "relative",
                 width: "calc(100% - 40px)",
                 margin: "20px 20px 8px 20px",
                 padding: "4px 8px 4px 16px",
@@ -269,12 +299,34 @@ const ChatWindow = () => {
                 },
               }}
             >
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "0",
+                  width: "100%",
+                }}
+              >
+                <Snackbar
+                  open={open}
+                  autoHideDuration={5000}
+                  anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                  onClose={handleClose}
+                  sx={{
+                    position: "absolute",
+                    width: "100%",
+                  }}
+                >
+                  <Alert severity="info" variant="filled">
+                    <Typography variant="body1">{error}</Typography>
+                  </Alert>
+                </Snackbar>
+              </Box>
               <InputBase
                 value={userPrompt}
                 placeholder="What’s the weather today?"
                 size="small"
                 multiline
-                maxRows={2}
+                maxRows={4}
                 sx={{ width: "calc(100% - 48px)" }}
                 disabled={loading || !!processing}
                 onChange={handleChange}

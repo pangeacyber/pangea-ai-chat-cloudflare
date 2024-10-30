@@ -5,7 +5,7 @@ import { ChatMessage, useChatContext } from "@src/app/context";
 import {
   UserPromptMessage,
   LlmResponse,
-  DataGuardMessage,
+  AiGuardMessage,
   PromptGuardMessage,
 } from "../ChatMessages";
 import { useAuth } from "@pangeacyber/react-auth";
@@ -52,9 +52,9 @@ const ChatScroller: FC<Props> = ({ messages }) => {
                   key={`message-${message.hash}`}
                 />
               );
-            case "data_guard":
+            case "ai_guard":
               return (
-                <DataGuardMessage
+                <AiGuardMessage
                   findings={message.findings || "{}"}
                   key={`message-${message.hash || idx}`}
                 />
@@ -78,7 +78,7 @@ const ChatScroller: FC<Props> = ({ messages }) => {
   return (
     <Stack
       sx={{
-        maxHeight: auditPanelOpen ? "60vh" : "calc(100vh - 200px)",
+        maxHeight: auditPanelOpen ? "60vh" : "calc(100vh - 260px)",
         overflow: "hidden",
         overflowY: "auto",
         padding: "0 20px",

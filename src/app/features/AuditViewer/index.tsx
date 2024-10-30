@@ -1,7 +1,6 @@
 import { Collapse, IconButton, Stack, Typography } from "@mui/material";
 import {
   Close,
-  DragHandle,
   ExpandLess,
   ExpandMore,
   LockOutlined,
@@ -85,7 +84,7 @@ const AuditViewer = () => {
 
     if (!token) {
       const response: Audit.SearchResponse = {
-        id: "test",
+        id: "none",
         count: 0,
         expires_at: "",
         events: [],
@@ -122,7 +121,7 @@ const AuditViewer = () => {
           sx={{
             width: sidePanelOpen
               ? "calc(100vw - 375px)"
-              : "calc(100vw - 120px)",
+              : "calc(100vw - 130px)",
             marginBottom: "20px",
             padding: "20px",
             borderRadius: "10px",

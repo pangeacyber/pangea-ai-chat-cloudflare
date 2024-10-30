@@ -7,7 +7,7 @@ import {
   validateToken,
 } from "../requests";
 
-const SERVICE_NAME = "data-guard";
+const SERVICE_NAME = "ai-guard";
 const API_VERSION = "v1beta";
 
 export async function POST(request: NextRequest) {
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       event: {
         event_input: body.text,
         event_output: JSON.stringify(response.result.redacted_prompt),
-        event_type: "data_guard",
+        event_type: "ai_guard",
         event_context: JSON.stringify({
           recipe: body.recipe,
         }),

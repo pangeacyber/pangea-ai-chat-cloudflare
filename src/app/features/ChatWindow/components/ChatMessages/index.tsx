@@ -9,7 +9,7 @@ interface UserPromptProps {
   username: string;
 }
 
-interface DataGuardProps {
+interface AiGuardProps {
   findings: string;
 }
 
@@ -77,7 +77,7 @@ export const LlmResponse: FC<LlmMessageProps> = ({ message }) => {
   );
 };
 
-export const DataGuardMessage: FC<DataGuardProps> = ({ findings }) => {
+export const AiGuardMessage: FC<AiGuardProps> = ({ findings }) => {
   const findingsJSON = JSON.parse(findings);
   const malicous = findingsJSON?.malicious_count || 0;
   // const artifacts = findingsJSON?.artifact_count || 0;

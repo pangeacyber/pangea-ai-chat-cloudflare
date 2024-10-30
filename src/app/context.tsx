@@ -11,7 +11,6 @@ import {
 
 export interface ChatContextProps {
   loading: boolean;
-  processing: string;
   systemPrompt: string;
   userPrompt: string;
   promptGuardEnabled: boolean;
@@ -20,7 +19,6 @@ export interface ChatContextProps {
   auditPanelOpen: boolean;
   loginOpen: boolean;
   setLoading: (value: boolean) => void;
-  setProcessing: (value: string) => void;
   setSystemPrompt: (value: string) => void;
   setUserPrompt: (value: string) => void;
   setPromptGuardEnabled: (value: boolean) => void;
@@ -32,7 +30,6 @@ export interface ChatContextProps {
 
 const ChatContext = createContext<ChatContextProps>({
   loading: false,
-  processing: "",
   systemPrompt: "",
   userPrompt: "",
   promptGuardEnabled: true,
@@ -41,7 +38,6 @@ const ChatContext = createContext<ChatContextProps>({
   auditPanelOpen: false,
   loginOpen: false,
   setLoading: () => {},
-  setProcessing: () => {},
   setSystemPrompt: () => {},
   setUserPrompt: () => {},
   setPromptGuardEnabled: () => {},
@@ -72,7 +68,6 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
   const mounted = useRef(false);
 
   const [loading, setLoading] = useState(false);
-  const [processing, setProcessing] = useState("");
   const [systemPrompt, setSystemPrompt] = useState(
     "You're a helpful assistant.",
   );
@@ -110,7 +105,6 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
   const memoData = useMemo(
     () => ({
       loading,
-      processing,
       systemPrompt,
       userPrompt,
       promptGuardEnabled,
@@ -119,7 +113,6 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
       auditPanelOpen,
       loginOpen,
       setLoading,
-      setProcessing,
       setSystemPrompt,
       setUserPrompt,
       setPromptGuardEnabled,
@@ -130,7 +123,6 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
     }),
     [
       loading,
-      processing,
       systemPrompt,
       userPrompt,
       promptGuardEnabled,
@@ -139,7 +131,6 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
       auditPanelOpen,
       loginOpen,
       setLoading,
-      setProcessing,
       setSystemPrompt,
       setUserPrompt,
       setPromptGuardEnabled,
