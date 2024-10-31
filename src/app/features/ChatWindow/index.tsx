@@ -243,7 +243,7 @@ const ChatWindow = () => {
 
         // Get LLM responses for the last 24-hours
         const limitSearch = rateLimitQuery();
-
+        limitSearch.search_restriction = { actor: [user?.username] };
         const searchResp = await auditSearch(token, limitSearch);
         const count = searchResp?.count || 0;
         setRemaining(DAILY_MAX_MESSAGES - count);

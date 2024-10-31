@@ -43,9 +43,6 @@ export async function POST(request: NextRequest) {
     },
   ];
 
-  const limitSearch = rateLimitQuery();
-  const result = await auditSearchRequest(limitSearch);
-
   if (
     body.userPrompt.length + (body?.systemPrompt?.length || 0) >
     PROMPT_MAX_CHARS
@@ -54,6 +51,10 @@ export async function POST(request: NextRequest) {
       status: 400,
     });
   }
+
+  const limitSearch = rateLimitQuery();
+  limitSearch.search_restriction = { actor: [username] };
+  const result = await auditSearchRequest(limitSearch);
 
   if (result?.error || (result?.count || 0) >= DAILY_MAX_MESSAGES) {
     return new Response(`{"error": "Daily limit exceeded"}`, {

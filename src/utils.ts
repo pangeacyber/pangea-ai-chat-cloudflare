@@ -10,6 +10,7 @@ export const rateLimitQuery = () => {
     query: "event_type:llm_response",
     limit: 1,
     start: today,
+    search_restriction: {},
   };
 
   return limitSearch;
