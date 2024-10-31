@@ -15,7 +15,7 @@ import { useTheme } from "@mui/material/styles";
 import SendIcon from "@mui/icons-material/Send";
 import { useAuth } from "@pangeacyber/react-auth";
 
-import { DAILY_MAX_MESSAGES } from "@src/const";
+import { DAILY_MAX_MESSAGES, PROMPT_MAX_CHARS } from "@src/const";
 import { useChatContext, ChatMessage } from "@src/app/context";
 import {
   auditSearch,
@@ -118,7 +118,7 @@ const ChatWindow = () => {
 
         // don't send to the llm if prompt is malicious
         if (promptResp?.detected) {
-          setProcessing("");
+          processingError("Processing halted: suspicious prompt");
           return;
         }
       } catch (err) {
@@ -146,6 +146,12 @@ const ChatWindow = () => {
         processingError("AI Guard call failed, please try again");
         return;
       }
+    }
+
+    // don't send empty prompt
+    if (!llmUserPrompt) {
+      processingError("Processing halted: suspicious prompt");
+      return;
     }
 
     setProcessing("Waiting for LLM response");
@@ -211,7 +217,7 @@ const ChatWindow = () => {
   };
 
   useEffect(() => {
-    setOverLimit(userPrompt.length + systemPrompt.length > 1500);
+    setOverLimit(userPrompt.length + systemPrompt.length > PROMPT_MAX_CHARS);
   }, [userPrompt, systemPrompt]);
 
   useEffect(() => {

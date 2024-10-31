@@ -11,7 +11,7 @@ import {
   validateToken,
 } from "../requests";
 import { rateLimitQuery } from "@src/utils";
-import { DAILY_MAX_MESSAGES } from "@src/const";
+import { DAILY_MAX_MESSAGES, PROMPT_MAX_CHARS } from "@src/const";
 
 const TEMP = 0.5;
 const MAX_TOKENS = 512;
@@ -46,7 +46,10 @@ export async function POST(request: NextRequest) {
   const limitSearch = rateLimitQuery();
   const result = await auditSearchRequest(limitSearch);
 
-  if (body.userPrompt.length + (body?.systemPrompt?.length || 0) > 15000) {
+  if (
+    body.userPrompt.length + (body?.systemPrompt?.length || 0) >
+    PROMPT_MAX_CHARS
+  ) {
     return new Response(`{"error": "Maximum prompt size exceeded"}`, {
       status: 400,
     });

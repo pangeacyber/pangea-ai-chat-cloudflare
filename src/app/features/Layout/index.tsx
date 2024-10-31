@@ -96,9 +96,8 @@ const Layout = () => {
             </Stack>
             <Typography variant="h5">Unlock Pangea Chat</Typography>
             <Typography variant="body2">
-              Vel sed tellus sit elit. Vitae non cras adipiscing proin turpis
-              nunc id sollicitudin. Venenatis ullamcorper nulla sed ultrices sit
-              ultricies.
+              Unlock access to try out Pangea AI Guard and Prompt Guard
+              Services.
             </Typography>
             <Button variant="outlined" onClick={login}>
               Sign up or log in

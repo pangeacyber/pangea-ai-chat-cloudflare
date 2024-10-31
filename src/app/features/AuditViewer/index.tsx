@@ -45,8 +45,9 @@ const schema: any = {
       name: "Output",
     },
     {
-      id: "findings",
+      id: "event_findings",
       name: "Findings",
+      type: "string",
       required: false,
     },
     {
@@ -126,6 +127,10 @@ const AuditViewer = () => {
             padding: "20px",
             borderRadius: "10px",
             background: theme.palette.background.paper,
+            "& .react-json-view": {
+              backgroundColor: `#D3D3D3!important`,
+              borderRadius: "2px",
+            },
           }}
         >
           <Stack direction="row" justifyContent="space-between">
@@ -141,16 +146,18 @@ const AuditViewer = () => {
               <Close sx={{ color: Colors.icons }} />
             </IconButton>
           </Stack>
-          <AuditLogViewer
-            initialQuery=""
-            // @ts-ignore
-            onSearch={handleSearch}
-            // @ts-ignore
-            onPageChange={handlePageChange}
-            searchOnMount={false}
-            schema={schema}
-            visibilityModel={visibilityModel}
-          />
+          {auditPanelOpen && (
+            <AuditLogViewer
+              initialQuery=""
+              // @ts-ignore
+              onSearch={handleSearch}
+              // @ts-ignore
+              onPageChange={handlePageChange}
+              searchOnMount={true}
+              schema={schema}
+              visibilityModel={visibilityModel}
+            />
+          )}
         </Stack>
       </Collapse>
     </Stack>
