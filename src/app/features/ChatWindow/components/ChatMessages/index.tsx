@@ -137,7 +137,7 @@ export const AiGuardMessage: FC<AiGuardProps> = ({ findings }) => {
         variant="body1"
         sx={{ fontSize: "14px", whiteSpace: "nowrap" }}
       >
-        Data Guard
+        AI Guard
       </Typography>
       <Typography variant="body2">{result}</Typography>
     </Stack>
