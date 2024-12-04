@@ -39,7 +39,7 @@ const SecurityControls = () => {
         <ServiceToggle
           icon={<ReviewsOutlined />}
           name="AI Guard"
-          link="https://pangea.cloud/docs/api/data-guard"
+          link="https://pangea.cloud/docs/api/ai-guard"
           active={dataGuardEnabled}
           type="toggle"
           changeHandler={() => {

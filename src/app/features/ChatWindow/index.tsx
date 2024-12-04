@@ -1,4 +1,4 @@
-import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Box,
@@ -57,6 +57,7 @@ const ChatWindow = () => {
   const [processing, setProcessing] = useState("");
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>();
 
   const processingError = (msg: string) => {
     setError(msg);
@@ -276,13 +277,19 @@ const ChatWindow = () => {
     }
   }, [authenticated]);
 
+  useEffect(() => {
+    if (!loading && !processing) {
+      inputRef.current?.focus();
+    }
+  }, [processing, loading]);
+
   return (
     <Stack width="100%" height="100%">
       <Paper sx={{ height: "100%" }}>
         <Stack height="100%" alignItems="center" justifyContent="space-between">
           <Typography
             variant="h1"
-            sx={{ display: "flex", height: "100%", alignItems: "center" }}
+            sx={{ display: "flex", height: "100%", alignItems: "center", textAlign: "center" }}
           >
             Welcome to Pangea Chat.
           </Typography>
@@ -328,6 +335,7 @@ const ChatWindow = () => {
                 </Snackbar>
               </Box>
               <InputBase
+                inputRef={inputRef}
                 value={userPrompt}
                 placeholder="What’s the weather today?"
                 size="small"
