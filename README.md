@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# pangea-ai-chat
 
-## Getting Started
+An example webapp demonstrating Pangea's [AI Guard][] and [Prompt Guard][]
+services.
 
-First, run the development server:
+## Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Node.js v20 or v22.
+- yarn v4.5.1 (or greater).
+- A [Pangea account][Pangea signup] with AI Guard, Prompt Guard, AuthN, and
+  Secure Audit Log enabled.
+
+## Setup
+
+### Pangea AuthN
+
+After activating AuthN:
+
+1. Under AuthN > General> Signup Settings, enable "Allow Signups". This way
+   users won't need to be manually added.
+2. For development only: under AuthN > General > Redirect (Callback) Settings,
+   add `http://localhost:3000` as a redirect.
+3. Under AuthN > General > Social (OAuth), enable Google, GitHub, and LinkedIn.
+4. Under AuthN > Overview, note the "Client Token" and "Hosted Login" values for
+   later.
+
+### Repository
+
+```
+git clone https://github.com/pangeacyber/pangea-ai-chat.git
+cd pangea-ai-chat
+yarn install
+cp .env.template .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+There are several values that need to be filled out in `.env.local`:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `NEXT_PUBLIC_PANGEA_CLIENT_TOKEN`: This should be the AuthN "Client Token"
+  that was noted earlier.
+- `NEXT_PUBLIC_AUTHN_UI_URL`: This should be the AuthN "Hosted Login" that was
+  noted earlier.
+- `PANGEA_SERVICE_TOKEN`: Pangea API token with access to AI Guard and Prompt
+  Guard.
+- `PANGEA_AUDIT_CONFIG_ID`: Pangea Secure Audit Log configuration ID.
+- `AWS_ACCESS_KEY_ID`: AWS access key.
+- `AWS_SECRET_ACCESS_KEY`: Secret key associated with the AWS access key
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Usage
 
-## Learn More
+A development version of the app can be started with:
 
-To learn more about Next.js, take a look at the following resources:
+```
+yarn dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Then navigate to <http://localhost:3000>.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[AI Guard]: https://pangea.cloud/docs/ai-guard/
+[Prompt Guard]: https://pangea.cloud/docs/prompt-guard/
+[Pangea signup]: https://pangea.cloud/signup
