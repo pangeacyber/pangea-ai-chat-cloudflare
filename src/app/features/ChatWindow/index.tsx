@@ -50,7 +50,7 @@ const ChatWindow = () => {
     setLoading,
     setLoginOpen,
   } = useChatContext();
-  const { authenticated, user } = useAuth();
+  const { authenticated, user, logout } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [remaining, setRemaining] = useState(DAILY_MAX_MESSAGES);
   const [overlimit, setOverLimit] = useState(false);
@@ -59,10 +59,17 @@ const ChatWindow = () => {
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>();
 
-  const processingError = (msg: string) => {
-    setError(msg);
-    setProcessing("");
-    setOpen(true);
+  const processingError = (msg: string, status: number = 0) => {
+    if (status && status === 403) {
+      setError("Session expired, please log in again");
+      setProcessing("");
+      logout();
+      setLoginOpen(true);
+    } else {
+      setError(msg);
+      setProcessing("");
+      setOpen(true);
+    }
   };
 
   const handleSubmit = async () => {
@@ -101,7 +108,8 @@ const ChatWindow = () => {
       setMessages((prevMessages) => [...prevMessages, promptMsg]);
       setUserPrompt("");
     } catch (err) {
-      processingError("User prompt logging failed, please try again");
+      const status = err instanceof Response ? err.status : 0;
+      processingError("User prompt logging failed, please try again", status);
       return;
     }
 
@@ -123,7 +131,8 @@ const ChatWindow = () => {
           return;
         }
       } catch (err) {
-        processingError("Prompt Guard call failed, please try again");
+        const status = err instanceof Response ? err.status : 0;
+        processingError("Prompt Guard call failed, please try again", status);
         return;
       }
     }
@@ -144,7 +153,8 @@ const ChatWindow = () => {
 
         llmUserPrompt = dataResp.redacted_prompt;
       } catch (err) {
-        processingError("AI Guard call failed, please try again");
+        const status = err instanceof Response ? err.status : 0;
+        processingError("AI Guard call failed, please try again", status);
         return;
       }
     }
@@ -166,7 +176,8 @@ const ChatWindow = () => {
       // decrement daily remaining count
       setRemaining((curVal) => curVal - 1);
     } catch (err) {
-      processingError("LLM call failed, please try again");
+      const status = err instanceof Response ? err.status : 0;
+      processingError("LLM call failed, please try again", status);
       return;
     }
 
@@ -184,7 +195,8 @@ const ChatWindow = () => {
 
         llmResponse = dataResp.redacted_prompt;
       } catch (err) {
-        processingError("AI Guard call failed, please try again");
+        const status = err instanceof Response ? err.status : 0;
+        processingError("AI Guard call failed, please try again", status);
       }
     }
 
@@ -245,7 +257,14 @@ const ChatWindow = () => {
         // Get LLM responses for the last 24-hours
         const limitSearch = rateLimitQuery();
         limitSearch.search_restriction = { actor: [user?.username] };
-        const searchResp = await auditSearch(token, limitSearch);
+        const searchResp = await auditSearch(token, limitSearch).catch(
+          (err) => {
+            const status = err instanceof Response ? err.status : 0;
+            processingError("", status);
+            setLoading(false);
+            throw err;
+          },
+        );
         const count = searchResp?.count || 0;
         setRemaining(DAILY_MAX_MESSAGES - count);
 
@@ -289,7 +308,12 @@ const ChatWindow = () => {
         <Stack height="100%" alignItems="center" justifyContent="space-between">
           <Typography
             variant="h1"
-            sx={{ display: "flex", height: "100%", alignItems: "center", textAlign: "center" }}
+            sx={{
+              display: "flex",
+              height: "100%",
+              alignItems: "center",
+              textAlign: "center",
+            }}
           >
             Welcome to Pangea Chat.
           </Typography>
