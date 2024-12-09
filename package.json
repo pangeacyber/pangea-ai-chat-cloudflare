@@ -28,5 +28,5 @@
     "eslint-config-next": "14.2.15",
     "typescript": "^5"
   },
-  "packageManager": "yarn@4.5.1"
+  "packageManager": "yarn@4.5.3"
 }
