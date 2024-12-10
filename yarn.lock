@@ -696,7 +696,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/react@npm:^11.13.3":
+"@emotion/react@npm:^11.13.5":
   version: 11.14.0
   resolution: "@emotion/react@npm:11.14.0"
   dependencies:
@@ -737,7 +737,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/styled@npm:^11.13.0":
+"@emotion/styled@npm:^11.13.5":
   version: 11.14.0
   resolution: "@emotion/styled@npm:11.14.0"
   dependencies:
@@ -4585,8 +4585,8 @@ __metadata:
   resolution: "pangea-ai-example@workspace:."
   dependencies:
     "@aws-sdk/client-bedrock-runtime": "npm:^3.706.0"
-    "@emotion/react": "npm:^11.13.3"
-    "@emotion/styled": "npm:^11.13.0"
+    "@emotion/react": "npm:^11.13.5"
+    "@emotion/styled": "npm:^11.13.5"
     "@mui/icons-material": "npm:5.16.7"
     "@mui/material": "npm:5.16.7"
     "@pangeacyber/react-auth": "npm:^0.0.14"
