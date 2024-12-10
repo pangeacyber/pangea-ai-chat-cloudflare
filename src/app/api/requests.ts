@@ -32,10 +32,13 @@ export async function auditLogRequest(data: any) {
   }
 }
 
-export async function auditSearchRequest(data: any) {
+export async function auditSearchRequest(data: object) {
   const url = getUrl("audit", "v1/search");
 
-  const { success, response } = await postRequest(url, data);
+  const { success, response } = await postRequest(url, {
+    config_id: process.env.PANGEA_AUDIT_CONFIG_ID,
+    ...data,
+  });
 
   if (!success) {
     console.log("AUDIT SEARCH ERROR:", response.result.errors);
