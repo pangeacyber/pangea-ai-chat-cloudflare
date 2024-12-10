@@ -2095,12 +2095,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18":
-  version: 18.3.0
-  resolution: "@types/react-dom@npm:18.3.0"
-  dependencies:
-    "@types/react": "npm:*"
-  checksum: 10c0/6c90d2ed72c5a0e440d2c75d99287e4b5df3e7b011838cdc03ae5cd518ab52164d86990e73246b9d812eaf02ec351d74e3b4f5bd325bf341e13bf980392fd53b
+"@types/react-dom@npm:^18.3.2":
+  version: 18.3.3
+  resolution: "@types/react-dom@npm:18.3.3"
+  peerDependencies:
+    "@types/react": ^18.0.0
+  checksum: 10c0/f0bc467e09bfd1212bc350826de0faa155e1d77c5e3d8fbed3b172187173baeb90161474d2ef40df59204974a9712827baa3c46ffa7c66ba433b696f7715cb15
   languageName: node
   linkType: hard
 
@@ -2125,13 +2125,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:^18":
+"@types/react@npm:*":
   version: 18.3.11
   resolution: "@types/react@npm:18.3.11"
   dependencies:
     "@types/prop-types": "npm:*"
     csstype: "npm:^3.0.2"
   checksum: 10c0/ce80512246ca5bda69db85b9f4f1835189334acfb6b2c4f3eda8cabff1ff1a3ea9ce4f3b895bdbc18c94140aa45592331aa3fdeb557f525c1b048de7ce84fc0e
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^18.3.14":
+  version: 18.3.14
+  resolution: "@types/react@npm:18.3.14"
+  dependencies:
+    "@types/prop-types": "npm:*"
+    csstype: "npm:^3.0.2"
+  checksum: 10c0/d925fbfcf084238b93d1a0b5406d4cf9aeb37c4a1191559aa4ee107c2e55cc15327989140f03eddda4d471f5b935d4673fd74a86f451860edea18eae48ca44f8
   languageName: node
   linkType: hard
 
@@ -4592,13 +4602,13 @@ __metadata:
     "@pangeacyber/react-auth": "npm:^0.0.14"
     "@pangeacyber/react-mui-audit-log-viewer": "npm:^0.0.95"
     "@types/node": "npm:^22.10.1"
-    "@types/react": "npm:^18"
-    "@types/react-dom": "npm:^18"
+    "@types/react": "npm:^18.3.14"
+    "@types/react-dom": "npm:^18.3.2"
     eslint: "npm:^9.16.0"
     eslint-config-next: "npm:14.2.20"
     next: "npm:14.2.20"
-    react: "npm:^18"
-    react-dom: "npm:^18"
+    react: "npm:^18.3.1"
+    react-dom: "npm:^18.3.1"
     typescript: "npm:^5"
   languageName: unknown
   linkType: soft
@@ -4793,7 +4803,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^18":
+"react-dom@npm:^18.3.1":
   version: 18.3.1
   resolution: "react-dom@npm:18.3.1"
   dependencies:
@@ -4904,7 +4914,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18":
+"react@npm:^18.3.1":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
   dependencies:
