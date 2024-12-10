@@ -17,13 +17,13 @@
     "@pangeacyber/react-auth": "^0.0.14",
     "@pangeacyber/react-mui-audit-log-viewer": "^0.0.95",
     "next": "14.2.20",
-    "react": "^18",
-    "react-dom": "^18"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "^18.3.14",
+    "@types/react-dom": "^18.3.2",
     "eslint": "^9.16.0",
     "eslint-config-next": "14.2.20",
     "typescript": "^5"
