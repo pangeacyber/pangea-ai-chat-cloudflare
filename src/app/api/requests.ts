@@ -18,14 +18,17 @@ export async function validateToken(request: NextRequest) {
   }
 }
 
-export async function auditLogRequest(data: any) {
+export async function auditLogRequest(data: { event: Record<string, string> }) {
   const url = getUrl("audit", "v1/log");
   const now = new Date();
 
   // Add timestamp to event
   data.event.timestamp = now.toISOString();
 
-  const { success, response } = await postRequest(url, data);
+  const { success, response } = await postRequest(url, {
+    config_id: process.env.PANGEA_AUDIT_CONFIG_ID,
+    ...data,
+  });
 
   if (!success) {
     console.log("AUDIT LOG ERROR:", response.result.errors);
