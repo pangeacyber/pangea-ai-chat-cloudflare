@@ -99,7 +99,7 @@ export const AiGuardMessage: FC<AiGuardProps> = ({ findings }) => {
 
   if (redacted) {
     if (addPipe) result += " | ";
-    result += `${redacted} item${redacted > 1 ? "s" : ""} redacted`;
+    result += `${redacted} ${redacted > 1 ? "entities" : "entity"} detected`;
     addPipe = true;
   }
 
