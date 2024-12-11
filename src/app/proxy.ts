@@ -23,16 +23,16 @@ export const auditProxyRequest = async (
 export const aiProxyRequest = async (
   token: string,
   body: any,
-): Promise<Response> => {
+): Promise<{ content: string }> => {
   return baseProxyRequest(token, "ai", "", body);
 };
 
-const baseProxyRequest = async (
+const baseProxyRequest = async <T = unknown>(
   token: string,
   service: string,
   action: string,
-  body: any,
-): Promise<Response> => {
+  body: unknown,
+): Promise<T> => {
   const args = !!action ? `?action=${action}` : "";
   const resp = await fetch(`/api/${service}${args}`, {
     method: "POST",

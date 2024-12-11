@@ -1,9 +1,7 @@
 import type { NextRequest } from "next/server";
-import {
-  BedrockRuntimeClient,
-  ConverseCommand,
-  Message,
-} from "@aws-sdk/client-bedrock-runtime";
+import { ChatBedrockConverse } from "@langchain/aws";
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { StringOutputParser } from "@langchain/core/output_parsers";
 
 import {
   auditLogRequest,
@@ -16,6 +14,26 @@ import { DAILY_MAX_MESSAGES, PROMPT_MAX_CHARS } from "@src/const";
 const TEMP = 0.5;
 const MAX_TOKENS = 512;
 
+const llm = new ChatBedrockConverse({
+  model: process.env.PANGEA_AI_MODEL!,
+  region: process.env.PANGEA_AI_REGION!,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+  temperature: TEMP,
+  maxTokens: MAX_TOKENS,
+});
+const chain = llm.pipe(new StringOutputParser());
+
+interface RequestBody {
+  /** System prompt. */
+  systemPrompt?: string;
+
+  /** User's prompt. */
+  userPrompt: string;
+}
+
 export async function POST(request: NextRequest) {
   const { success, username } = await validateToken(request);
 
@@ -23,30 +41,10 @@ export async function POST(request: NextRequest) {
     return new Response("Forbidden", { status: 403 });
   }
 
-  const body: any = await request.json();
+  const body: RequestBody = await request.json();
+  const systemPrompt = body.systemPrompt || "";
 
-  const client = new BedrockRuntimeClient({
-    region: process.env.PANGEA_AI_REGION,
-  });
-
-  const config = {
-    maxTokens: MAX_TOKENS,
-    temperature: TEMP,
-  };
-  const systemPrompt = !!body.systemPrompt
-    ? { system: [{ text: body.systemPrompt }] }
-    : {};
-  const conversation: Message[] = [
-    {
-      role: "user",
-      content: [{ text: body.userPrompt }],
-    },
-  ];
-
-  if (
-    body.userPrompt.length + (body?.systemPrompt?.length || 0) >
-    PROMPT_MAX_CHARS
-  ) {
+  if (body.userPrompt.length + systemPrompt.length > PROMPT_MAX_CHARS) {
     return new Response(`{"error": "Maximum prompt size exceeded"}`, {
       status: 400,
     });
@@ -63,18 +61,10 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const response = await client.send(
-      new ConverseCommand({
-        modelId: process.env.PANGEA_AI_MODEL,
-        inferenceConfig: config,
-        ...systemPrompt,
-        messages: conversation,
-      }),
-    );
-
-    // @ts-ignore
-    const text = response.output?.message?.content[0].text || "";
-    const llmReply = JSON.stringify(response);
+    const text = await chain.invoke([
+      new SystemMessage(systemPrompt),
+      new HumanMessage(body.userPrompt),
+    ]);
 
     const auditLogData = {
       event: {
@@ -82,7 +72,7 @@ export async function POST(request: NextRequest) {
         event_output: text,
         event_type: "llm_response",
         event_context: JSON.stringify({
-          system_prompt: body.systemPrompt || "",
+          system_prompt: systemPrompt,
         }),
         actor: username,
       },
@@ -90,7 +80,7 @@ export async function POST(request: NextRequest) {
 
     await auditLogRequest(auditLogData);
 
-    return new Response(llmReply);
+    return Response.json({ content: text });
   } catch (err) {
     console.log("Error:", err);
     return new Response(`{"error": "ConverseCommand failed"}`, {

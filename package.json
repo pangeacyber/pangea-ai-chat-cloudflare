@@ -9,9 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@aws-sdk/client-bedrock-runtime": "^3.706.0",
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
+    "@langchain/aws": "0.1.2",
+    "@langchain/core": "0.3.23",
     "@mui/icons-material": "6.1.10",
     "@mui/material": "6.1.10",
     "@pangeacyber/react-auth": "^0.0.14",
