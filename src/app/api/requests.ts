@@ -2,20 +2,30 @@ import type { NextRequest } from "next/server";
 
 import { delay } from "@src/utils";
 
-export async function validateToken(request: NextRequest) {
+type ValidatedToken =
+  | { success: true; username: string; profile: Record<string, string> }
+  | { success: false; username: undefined; profile: undefined };
+
+export async function validateToken(
+  request: NextRequest,
+): Promise<ValidatedToken> {
   const auth = request.headers.get("Authorization");
   const token = auth?.match(/^bearer/i) ? auth.split(" ")[1] : "";
 
   if (!token) {
-    return { success: false, username: undefined };
-  } else {
+    return { success: false, username: undefined, profile: undefined };
+  }
+
     const url = getUrl("authn", "v2/client/token/check");
     const body = { token };
 
     const { success, response } = await postRequest(url, body, true);
 
-    return { success, username: response?.result?.owner };
-  }
+  return {
+    success,
+    username: response?.result?.owner,
+    profile: response?.result?.profile,
+  };
 }
 
 export async function auditLogRequest(data: { event: Record<string, string> }) {
