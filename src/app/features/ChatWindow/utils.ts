@@ -14,9 +14,7 @@ export const sendUserMessage = async (
     userPrompt: message,
     systemPrompt: system,
   });
-
-  // @ts-ignore
-  return response.output?.message?.content[0].text || "";
+  return response.content;
 };
 
 export const callPromptGuard = async (
