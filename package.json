@@ -27,7 +27,7 @@
     "@pangeacyber/react-mui-audit-log-viewer": "^1.0.5",
     "langchain": "0.3.7",
     "markdown-table": "3.0.4",
-    "next": "15.1.0",
+    "next": "14.2.20",
     "pangea-node-sdk": "4.2.0-beta.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
