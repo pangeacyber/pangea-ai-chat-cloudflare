@@ -5,5 +5,13 @@
     ":semanticCommitsDisabled"
   ],
   "automerge": true,
-  "automergeStrategy": "rebase"
+  "automergeStrategy": "rebase",
+  "packageRules": [
+    {
+      "description": "Cloudflare Pages cannot build Next.js v15 yet.",
+      "matchDepNames": ["next"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
+  ]
 }
