@@ -1,7 +1,7 @@
-import { FC, ReactNode } from "react";
-import { Box, Button, Link, Stack, Switch, Typography } from "@mui/material";
 import { OpenInNewOutlined } from "@mui/icons-material";
-import { styled, useTheme } from "@mui/material/styles";
+import { Box, Button, Link, Stack, Switch, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import type { FC, ReactNode } from "react";
 
 interface Props {
   icon: ReactNode;

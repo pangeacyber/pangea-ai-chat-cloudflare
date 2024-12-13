@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
   title: "Pangea - AI Playground",
-  description: "Pangea Prompt Guard and Data Guard integration",
+  description: "Pangea Prompt Guard and AI Guard integration",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en">

@@ -1,19 +1,25 @@
 {
-  "name": "pangea-ai-example",
-  "version": "0.1.0",
+  "name": "@pangeacyber/pangea-ai-chat-cloudflare",
+  "version": "0.0.0-development",
   "private": true,
+  "type": "module",
+  "browserslist": ["last 1 Firefox version", "last 1 Chrome version"],
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "build": "next build",
+    "prestart": "npm run -s build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "biome check .",
+    "pages:build": "npx @cloudflare/next-on-pages",
+    "prepreview": "npm run -s pages:build",
+    "preview": "wrangler pages dev --ip 0.0.0.0",
+    "predeploy": "npm run -s pages:build",
+    "deploy": "wrangler pages deploy"
   },
   "dependencies": {
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
-    "@googleapis/drive": "8.14.0",
-    "@googleapis/sheets": "9.3.1",
-    "@langchain/aws": "0.1.2",
+    "@langchain/cloudflare": "0.1.0",
     "@langchain/core": "0.3.23",
     "@mui/icons-material": "6.1.10",
     "@mui/material": "6.1.10",
@@ -22,16 +28,23 @@
     "langchain": "0.3.7",
     "markdown-table": "3.0.4",
     "next": "14.2.20",
+    "pangea-node-sdk": "4.2.0-beta.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@cloudflare/next-on-pages": "1.13.7",
+    "@cloudflare/workers-types": "4.20241205.0",
+    "@dotenvx/dotenvx": "^1.29.0",
+    "@googleapis/drive": "8.14.0",
+    "@googleapis/sheets": "9.3.1",
+    "@tsconfig/next": "2.0.3",
     "@types/node": "^22.10.1",
     "@types/react": "^18.3.14",
     "@types/react-dom": "^18.3.2",
-    "eslint": "^9.16.0",
-    "eslint-config-next": "14.2.20",
-    "typescript": "^5.7.2"
-  },
-  "packageManager": "yarn@4.5.3"
+    "typescript": "^5.7.2",
+    "ultracite": "4.1.12",
+    "wrangler": "3.95.0"
+  }
 }

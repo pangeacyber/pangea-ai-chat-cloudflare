@@ -1,43 +1,38 @@
-import type { NextRequest } from "next/server";
-import { BedrockEmbeddings, ChatBedrockConverse } from "@langchain/aws";
+import { getRequestContext } from "@cloudflare/next-on-pages";
+import type {
+  Ai,
+  VectorizeIndex,
+} from "@cloudflare/workers-types/experimental";
+import {
+  ChatCloudflareWorkersAI,
+  CloudflareVectorizeStore,
+  CloudflareWorkersAIEmbeddings,
+} from "@langchain/cloudflare";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { StringOutputParser } from "@langchain/core/output_parsers";
-import { MemoryVectorStore } from "langchain/vectorstores/memory";
+import type { NextRequest } from "next/server";
+
+import { DAILY_MAX_MESSAGES, PROMPT_MAX_CHARS } from "@src/const";
+import { rateLimitQuery } from "@src/utils";
 
 import {
   auditLogRequest,
   auditSearchRequest,
   validateToken,
 } from "../requests";
-import { rateLimitQuery } from "@src/utils";
-import { DAILY_MAX_MESSAGES, PROMPT_MAX_CHARS } from "@src/const";
-import { GoogleDriveRetriever } from "@src/google";
 
-const TEMP = 0.5;
-const MAX_TOKENS = 512;
+declare global {
+  interface CloudflareEnv {
+    /** Workers AI binding. */
+    AI: Ai;
 
-const docsLoader = new GoogleDriveRetriever({
-  credentials: JSON.parse(process.env.GOOGLE_DRIVE_CREDENTIALS!),
-  folderId: process.env.GOOGLE_DRIVE_FOLDER_ID!,
-  scopes: ["https://www.googleapis.com/auth/drive.readonly"],
-});
+    /** Vectorize index binding. */
+    VECTORIZE: VectorizeIndex;
+  }
+}
 
-const embeddingsModel = new BedrockEmbeddings({
-  region: process.env.PANGEA_AI_REGION!,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
-});
-const llm = new ChatBedrockConverse({
-  model: process.env.PANGEA_AI_MODEL!,
-  region: process.env.PANGEA_AI_REGION!,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
-  temperature: TEMP,
-  maxTokens: MAX_TOKENS,
+const llm = new ChatCloudflareWorkersAI({
+  model: "@cf/meta/llama-2-7b-chat-int8",
 });
 const chain = llm.pipe(new StringOutputParser());
 
@@ -50,6 +45,11 @@ interface RequestBody {
 }
 
 export async function POST(request: NextRequest) {
+  const { env } = getRequestContext();
+  const embeddingsModel = new CloudflareWorkersAIEmbeddings({
+    binding: env.AI,
+  });
+
   const { success, username, profile } = await validateToken(request);
 
   if (!(success && username)) {
@@ -67,54 +67,49 @@ export async function POST(request: NextRequest) {
 
   const limitSearch = rateLimitQuery();
   limitSearch.search_restriction = { actor: [username] };
-  const result = await auditSearchRequest(limitSearch);
+  // biome-ignore lint/suspicious/noExplicitAny: TODO
+  const result: any = await auditSearchRequest(limitSearch);
 
-  if (result?.error || (result?.count || 0) >= DAILY_MAX_MESSAGES) {
+  if (result.error || (result.count || 0) >= DAILY_MAX_MESSAGES) {
     return new Response(`{"error": "Daily limit exceeded"}`, {
       status: 400,
     });
   }
 
-  try {
-    const vectorStore = await MemoryVectorStore.fromDocuments(
-      await docsLoader.invoke(""), // Load all documents.
-      embeddingsModel,
-    );
-    const retriever = vectorStore.asRetriever();
-    const docs = await retriever.invoke(body.userPrompt);
-    const context = docs.length
-      ? `PTO balances:\n${docs
-          .map(({ pageContent }) => pageContent)
-          .join("\n\n")})`
-      : "";
+  const vectorStore = new CloudflareVectorizeStore(embeddingsModel, {
+    index: env.VECTORIZE,
+  });
+  const retriever = vectorStore.asRetriever();
+  const docs = await retriever.invoke(body.userPrompt);
+  const context = docs.length
+    ? `PTO balances:\n${docs
+        .map(({ pageContent }) => pageContent)
+        .join("\n\n")})`
+    : "";
 
-    const text = await chain.invoke([
-      new SystemMessage(`${systemPrompt}
+  const text = await chain.invoke([
+    new SystemMessage(`${systemPrompt}
 User's first name: ${profile.first_name}
 User's last name: ${profile.last_name}
 Context: ${context}`),
-      new HumanMessage(body.userPrompt),
-    ]);
+    new HumanMessage(body.userPrompt),
+  ]);
 
-    const auditLogData = {
-      event: {
-        event_input: body.userPrompt,
-        event_output: text,
-        event_type: "llm_response",
-        event_context: JSON.stringify({
-          system_prompt: systemPrompt,
-        }),
-        actor: username,
-      },
-    };
+  const auditLogData = {
+    event: {
+      input: body.userPrompt,
+      output: text,
+      type: "llm_response",
+      context: JSON.stringify({
+        system_prompt: systemPrompt,
+      }),
+      actor: username,
+    },
+  };
 
-    await auditLogRequest(auditLogData);
+  await auditLogRequest(auditLogData);
 
-    return Response.json({ content: text });
-  } catch (err) {
-    console.log("Error:", err);
-    return new Response(`{"error": "ConverseCommand failed"}`, {
-      status: 400,
-    });
-  }
+  return Response.json({ content: text });
 }
+
+export const runtime = "edge";

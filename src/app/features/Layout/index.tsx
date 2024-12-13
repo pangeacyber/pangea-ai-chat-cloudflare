@@ -1,15 +1,16 @@
 import { Box, Button, Drawer, Modal, Stack, Typography } from "@mui/material";
-import { styled, useTheme } from "@mui/material/styles";
-
+import { styled } from "@mui/material/styles";
 import { useAuth } from "@pangeacyber/react-auth";
 
-import { Colors } from "@app/theme";
-import SideBar from "@app/components/SideBar";
-import AuditViewer from "../AuditViewer";
-import SidePanel from "../SidePanel";
-import ChatWindow from "../ChatWindow";
-import { useChatContext } from "@app/context";
 import PangeaLogo from "@src/app/components/Logo";
+
+import SideBar from "@app/components/SideBar";
+import { useChatContext } from "@app/context";
+import { Colors } from "@app/theme";
+
+import AuditViewer from "../AuditViewer";
+import ChatWindow from "../ChatWindow";
+import SidePanel from "../SidePanel";
 
 const panelOpenWidth = 330;
 

@@ -1,0 +1,10 @@
+name = "pangea-ai-chat"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
+
+[ai]
+binding = "AI"
+
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "pangea-ai-chat"

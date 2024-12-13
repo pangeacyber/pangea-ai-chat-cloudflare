@@ -1,14 +1,15 @@
-import { Stack } from "@mui/material";
 import {
   LockOutlined,
   MediationOutlined,
   ReviewsOutlined,
 } from "@mui/icons-material";
+import { Stack } from "@mui/material";
 import { useAuth } from "@pangeacyber/react-auth";
 
 import CollapsablePanel from "@app/components/CollapsablePanel";
-import ServiceToggle from "./ServiceToggle";
 import { useChatContext } from "@app/context";
+
+import ServiceToggle from "./ServiceToggle";
 
 const SecurityControls = () => {
   const { authenticated } = useAuth();

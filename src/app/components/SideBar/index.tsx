@@ -1,14 +1,15 @@
-import { FC } from "react";
-import { IconButton, Stack } from "@mui/material";
 import {
   LockOutlined,
   LoginOutlined,
   MediationOutlined,
   ReviewsOutlined,
 } from "@mui/icons-material";
+import { IconButton, Stack } from "@mui/material";
+import type { FC } from "react";
+
+import { Colors } from "@app/theme";
 
 import PangeaLogo from "../Logo";
-import { Colors } from "@app/theme";
 
 interface Props {
   handleClick: () => void;

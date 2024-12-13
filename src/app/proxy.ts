@@ -1,30 +1,34 @@
-export const dataGuardProxyRequest = async (
-  token: string,
-  body: any,
-): Promise<Response> => {
-  return baseProxyRequest(token, "data", "", body);
+import type { AIGuard } from "pangea-node-sdk";
+
+export const dataGuardProxyRequest = async (token: string, body: unknown) => {
+  return await baseProxyRequest<AIGuard.TextGuardResult>(
+    token,
+    "data",
+    "",
+    body,
+  );
 };
 
 export const promptGuardProxyRequest = async (
   token: string,
-  body: any,
-): Promise<Response> => {
-  return baseProxyRequest(token, "prompt", "", body);
+  body: unknown,
+): Promise<{ detected: boolean }> => {
+  return await baseProxyRequest(token, "prompt", "", body);
 };
 
-export const auditProxyRequest = async (
+export const auditProxyRequest = async <T>(
   token: string,
   action: string,
-  body: any,
-): Promise<Response> => {
-  return baseProxyRequest(token, "audit", action, body);
+  body: unknown,
+) => {
+  return await baseProxyRequest<T>(token, "audit", action, body);
 };
 
 export const aiProxyRequest = async (
   token: string,
-  body: any,
+  body: unknown,
 ): Promise<{ content: string }> => {
-  return baseProxyRequest(token, "ai", "", body);
+  return await baseProxyRequest(token, "ai", "", body);
 };
 
 const baseProxyRequest = async <T = unknown>(
@@ -33,7 +37,7 @@ const baseProxyRequest = async <T = unknown>(
   action: string,
   body: unknown,
 ): Promise<T> => {
-  const args = !!action ? `?action=${action}` : "";
+  const args = action ? `?action=${action}` : "";
   const resp = await fetch(`/api/${service}${args}`, {
     method: "POST",
     body: JSON.stringify(body),

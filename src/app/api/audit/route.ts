@@ -6,13 +6,14 @@ const SERVICE_NAME = "audit";
 const API_VERSION = "v1";
 
 export async function POST(request: NextRequest) {
-  const { success, username } = await validateToken(request);
+  const { success: authenticated, username } = await validateToken(request);
 
-  if (!(success && username)) {
+  if (!(authenticated && username)) {
     return new Response("Forbidden", { status: 403 });
   }
 
   const action = request.nextUrl.searchParams.get("action");
+  // biome-ignore lint/suspicious/noExplicitAny: TODO
   const body: any = await request.json();
   body.config_id = process.env.PANGEA_AUDIT_CONFIG_ID;
 
@@ -31,28 +32,28 @@ export async function POST(request: NextRequest) {
       body.event.actor = username;
       endpoint = "log";
       break;
-  }
-
-  if (!endpoint) {
-    return new Response(`{"error": "Audit action '${action}' is invalid"}`, {
-      status: 400,
-    });
+    default:
+      return Response.json(
+        { error: `Audit action '${action}' is invalid` },
+        { status: 400 },
+      );
   }
 
   const url = getUrl(SERVICE_NAME, `${API_VERSION}/${endpoint}`);
 
-  try {
-    const { success, response } = await postRequest(url, body);
+  const { success, response } = await postRequest(url, body);
 
-    if (success) {
-      return new Response(JSON.stringify(response.result));
-    } else {
-      console.log("AUDIT LOG ERROR:", success, response.result.errors);
-      return new Response(JSON.stringify(response.result), { status: 400 });
-    }
-  } catch (err) {
-    return new Response(`{"error": ${err}`, {
-      status: 500,
-    });
+  if (!success) {
+    console.log(
+      "AUDIT LOG ERROR:",
+      success,
+      response,
+      process.env.PANGEA_SERVICE_TOKEN,
+    );
+    return new Response(JSON.stringify(response), { status: 400 });
   }
+
+  return new Response(JSON.stringify(response.result));
 }
+
+export const runtime = "edge";

@@ -17,29 +17,31 @@ export async function POST(request: NextRequest) {
     return new Response("Forbidden", { status: 403 });
   }
 
-  const body: any = await request.json();
+  const body: { messages: unknown[] } = await request.json();
 
   const endpoint = `${API_VERSION}/guard`;
   const url = getUrl(SERVICE_NAME, endpoint);
 
   const { success, response } = await postRequest(url, body);
 
-  if (success) {
-    const auditLogData = {
-      event: {
-        event_input: JSON.stringify(body.messages),
-        event_output: JSON.stringify(response.result),
-        event_type: "prompt_guard",
-        actor: username,
-      },
-    };
-
-    try {
-      await auditLogRequest(auditLogData);
-    } catch (_) {}
-
-    return new Response(JSON.stringify(response.result));
-  } else {
-    return new Response(JSON.stringify(response.result), { status: 400 });
+  if (!success) {
+    return Response.json(response, { status: 400 });
   }
+
+  const auditLogData = {
+    event: {
+      input: JSON.stringify(body.messages),
+      output: JSON.stringify(response.result),
+      type: "prompt_guard",
+      actor: username,
+    },
+  };
+
+  try {
+    await auditLogRequest(auditLogData);
+  } catch (_) {}
+
+  return Response.json(response.result);
 }
+
+export const runtime = "edge";

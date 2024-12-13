@@ -1,6 +1,7 @@
-import { FC } from "react";
-import { Avatar, Box, Stack, Typography } from "@mui/material";
 import { MediationOutlined, ReviewsOutlined } from "@mui/icons-material";
+import { Avatar, Box, Stack, Typography } from "@mui/material";
+import type { FC } from "react";
+
 import PangeaLogo from "@src/app/components/Logo";
 import { Colors } from "@src/app/theme";
 
@@ -94,23 +95,29 @@ export const AiGuardMessage: FC<AiGuardProps> = ({ findings }) => {
 
   if (injection) {
     addPipe = true;
-    result += `Prompt injection`;
+    result += "Prompt injection";
   }
 
   if (redacted) {
-    if (addPipe) result += " | ";
+    if (addPipe) {
+      result += " | ";
+    }
     result += `${redacted} ${redacted > 1 ? "entities" : "entity"} detected`;
     addPipe = true;
   }
 
   if (malicous) {
-    if (addPipe) result += " | ";
+    if (addPipe) {
+      result += " | ";
+    }
     result += `${malicous} malicous item${malicous > 1 ? "s" : ""}`;
     addPipe = true;
   }
 
   if (emails) {
-    if (addPipe) result += " | ";
+    if (addPipe) {
+      result += " | ";
+    }
     result += `${emails} compromised email${emails > 1 ? "s" : ""}`;
     addPipe = true;
   }

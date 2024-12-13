@@ -1,3 +1,5 @@
+import type { Audit } from "pangea-node-sdk";
+
 import {
   aiProxyRequest,
   auditProxyRequest,
@@ -21,7 +23,7 @@ export const callPromptGuard = async (
   token: string,
   userPrompt: string,
   systemPrompt: string,
-): Promise<any> => {
+): Promise<{ detected: boolean }> => {
   const messages = [
     {
       content: userPrompt,
@@ -29,17 +31,14 @@ export const callPromptGuard = async (
     },
   ];
 
-  if (!!systemPrompt) {
+  if (systemPrompt) {
     messages.push({ content: systemPrompt, role: "system" });
   }
 
   return await promptGuardProxyRequest(token, { messages });
 };
 
-export const callInputDataGuard = async (
-  token: string,
-  userPrompt: string,
-): Promise<any> => {
+export const callInputDataGuard = async (token: string, userPrompt: string) => {
   const payload = {
     recipe: "pangea_prompt_guard",
     text: userPrompt,
@@ -51,7 +50,7 @@ export const callInputDataGuard = async (
 export const callResponseDataGuard = async (
   token: string,
   llmResponse: string,
-): Promise<any> => {
+) => {
   const payload = {
     recipe: "pangea_llm_response_guard",
     text: llmResponse,
@@ -60,20 +59,14 @@ export const callResponseDataGuard = async (
   return await dataGuardProxyRequest(token, payload);
 };
 
-export const auditUserPrompt = async (
-  token: string,
-  data: any,
-): Promise<any> => {
-  return await auditProxyRequest(token, "log", data);
+export const auditUserPrompt = async (token: string, data: unknown) => {
+  return await auditProxyRequest<Audit.LogResponse>(token, "log", data);
 };
 
-export const auditPromptResponse = async (
-  token: string,
-  data: any,
-): Promise<any> => {
-  return await auditProxyRequest(token, "log", data);
+export const auditPromptResponse = async (token: string, data: unknown) => {
+  return await auditProxyRequest<Audit.LogResponse>(token, "log", data);
 };
 
-export const auditSearch = async (token: string, data: any): Promise<any> => {
-  return await auditProxyRequest(token, "search", data);
+export const auditSearch = async (token: string, data: unknown) => {
+  return await auditProxyRequest<Audit.SearchResponse>(token, "search", data);
 };

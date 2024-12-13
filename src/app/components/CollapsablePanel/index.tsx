@@ -1,6 +1,6 @@
-import { FC, ReactNode, useState } from "react";
-import { Collapse, IconButton, Stack, Typography } from "@mui/material";
 import { KeyboardArrowDownOutlined } from "@mui/icons-material";
+import { Collapse, IconButton, Stack, Typography } from "@mui/material";
+import { type FC, type ReactNode, useState } from "react";
 
 interface Props {
   title: ReactNode;

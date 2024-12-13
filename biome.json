@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "extends": ["ultracite"],
+  "linter": {
+    "rules": {
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off"
+      },
+      "style": {
+        "noNonNullAssertion": "off",
+        "noParameterAssign": "off",
+        "useFilenamingConvention": "off",
+        "useSingleCaseStatement": "off"
+      },
+      "suspicious": {
+        "noConsole": "off",
+        "noConsoleLog": "off",
+        "noEmptyBlockStatements": "off"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "trailingCommas": "all",
+      "quoteStyle": "double"
+    }
+  }
+}

@@ -1,5 +1,5 @@
-import { FC } from "react";
 import { Stack } from "@mui/material";
+import type { FC } from "react";
 
 interface Props {
   size?: number;
@@ -19,6 +19,7 @@ const PangeaLogo: FC<Props> = ({ size = 32 }) => {
       }}
     >
       <svg
+        role="presentation"
         width="18"
         height="16"
         viewBox="0 0 18 16"

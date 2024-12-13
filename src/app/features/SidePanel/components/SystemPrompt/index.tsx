@@ -1,5 +1,5 @@
-import { ChangeEvent } from "react";
 import { Stack, TextField } from "@mui/material";
+import type { ChangeEvent } from "react";
 
 import CollapsablePanel from "@app/components/CollapsablePanel";
 import { useChatContext } from "@src/app/context";

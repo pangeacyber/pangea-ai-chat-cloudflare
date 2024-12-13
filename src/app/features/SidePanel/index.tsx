@@ -1,13 +1,14 @@
-import { FC } from "react";
+import ViewSidebarOutlinedIcon from "@mui/icons-material/ViewSidebarOutlined";
 import { IconButton, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import ViewSidebarOutlinedIcon from "@mui/icons-material/ViewSidebarOutlined";
+import type { FC } from "react";
+
+import LoginWidget from "@app/components/LoginWidget";
+import PangeaLogo from "@app/components/Logo";
+import { Colors } from "@app/theme";
 
 import SecurityControls from "./components/SecurityControls";
 import SystemPrompt from "./components/SystemPrompt";
-import PangeaLogo from "@app/components/Logo";
-import { Colors } from "@app/theme";
-import LoginWidget from "@app/components/LoginWidget";
 
 interface Props {
   open: boolean;

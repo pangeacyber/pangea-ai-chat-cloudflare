@@ -1,14 +1,14 @@
-# pangea-ai-chat
+# pangea-ai-chat-cloudflare
 
-An example webapp demonstrating Pangea's [AI Guard][] and [Prompt Guard][]
-services.
+An example webapp on Cloudflare demonstrating Pangea's [AI Guard][] and
+[Prompt Guard][] services.
 
 ## Prerequisites
 
-- Node.js v20 or v22.
-- yarn v4.5.1 (or greater).
+- Node.js v22.
 - A [Pangea account][Pangea signup] with AI Guard, Prompt Guard, AuthN, and
   Secure Audit Log enabled.
+- A Cloudflare account.
 - A Google Drive folder containing spreadsheets.
 
   - Note down the ID of the folder for later (see [the LangChain docs][retrieve-the-google-docs]
@@ -51,20 +51,26 @@ After activating AuthN:
    users won't need to be manually added.
 2. For development only: under AuthN > General > Redirect (Callback) Settings,
    add `http://localhost:3000` as a redirect.
-3. Under AuthN > General > Social (OAuth), enable Google, GitHub, and LinkedIn.
+3. Under AuthN > General > Social (OAuth), enable Google.
 4. Under AuthN > Overview, note the "Client Token" and "Hosted Login" values for
    later.
+
+### Cloudflare Vectorize
+
+```
+npx wrangler vectorize create pangea-ai-chat --dimensions=768 --metric=cosine
+```
 
 ### Repository
 
 ```
 git clone https://github.com/pangeacyber/pangea-ai-chat.git
 cd pangea-ai-chat
-yarn install
-cp .env.template .env.local
+npm ci
+cp .dev.vars.example .dev.vars
 ```
 
-There are several values that need to be filled out in `.env.local`:
+There are several values that need to be filled out in `.dev.vars`:
 
 - `NEXT_PUBLIC_PANGEA_CLIENT_TOKEN`: This should be the AuthN "Client Token"
   that was noted earlier.
@@ -73,8 +79,6 @@ There are several values that need to be filled out in `.env.local`:
 - `PANGEA_SERVICE_TOKEN`: Pangea API token with access to AI Guard and Prompt
   Guard.
 - `PANGEA_AUDIT_CONFIG_ID`: Pangea Secure Audit Log configuration ID.
-- `AWS_ACCESS_KEY_ID`: AWS access key.
-- `AWS_SECRET_ACCESS_KEY`: Secret key associated with the AWS access key
 - `GOOGLE_DRIVE_CREDENTIALS`: Google service account credentials as a compacted
   JSON object. The value of this variable should be the contents of the
   `credentials.json` from earlier with its whitespace removed until it fits in a
@@ -86,7 +90,7 @@ There are several values that need to be filled out in `.env.local`:
 A development version of the app can be started with:
 
 ```
-yarn dev
+npm run dev
 ```
 
 Then navigate to <http://localhost:3000>.

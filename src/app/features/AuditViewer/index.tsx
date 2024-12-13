@@ -1,26 +1,29 @@
-import { Collapse, IconButton, Stack, Typography } from "@mui/material";
 import {
   Close,
   ExpandLess,
   ExpandMore,
   LockOutlined,
 } from "@mui/icons-material";
+import { Collapse, IconButton, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { Audit, AuditLogViewer } from "@pangeacyber/react-mui-audit-log-viewer";
 import { useAuth } from "@pangeacyber/react-auth";
+import {
+  type Audit,
+  AuditLogViewer,
+} from "@pangeacyber/react-mui-audit-log-viewer";
 
-import { Colors } from "@app/theme";
 import { useChatContext } from "@app/context";
+import { Colors } from "@app/theme";
 import { auditProxyRequest } from "@src/app/proxy";
 
-const visibilityModel: any = {
+const visibilityModel = {
   timestamp: true,
-  event_type: true,
-  event_input: true,
-  event_findings: true,
+  type: true,
+  input: true,
+  findings: true,
 };
 
-const schema: any = {
+const schema = {
   tamper_proofing: false,
   fields: [
     {
@@ -31,27 +34,27 @@ const schema: any = {
       required: true,
     },
     {
-      id: "event_type",
+      id: "type",
       name: "Event Type",
       required: true,
     },
     {
-      id: "event_input",
+      id: "input",
       name: "Input",
       required: true,
     },
     {
-      id: "event_output",
+      id: "output",
       name: "Output",
     },
     {
-      id: "event_findings",
+      id: "findings",
       name: "Findings",
       type: "string",
       required: false,
     },
     {
-      id: "event_context",
+      id: "context",
       name: "Context",
       required: false,
     },
@@ -67,33 +70,33 @@ const AuditViewer = () => {
   const handleSearch = async (body: Audit.SearchRequest) => {
     const token = user?.active_token?.token || "";
 
-    if (!token) {
-      const response: Audit.SearchResponse = {
-        id: "none",
-        count: 0,
-        expires_at: "",
-        events: [],
-      };
-      return response;
-    } else {
+    if (token) {
       return await auditProxyRequest(token, "search", body);
     }
+
+    const response: Audit.SearchResponse = {
+      id: "none",
+      count: 0,
+      expires_at: "",
+      events: [],
+    };
+    return response;
   };
 
   const handlePageChange = async (body: Audit.ResultRequest) => {
     const token = user?.active_token?.token || "";
 
-    if (!token) {
-      const response: Audit.SearchResponse = {
-        id: "none",
-        count: 0,
-        expires_at: "",
-        events: [],
-      };
-      return response;
-    } else {
+    if (token) {
       return await auditProxyRequest(token, "page", body);
     }
+
+    const response: Audit.SearchResponse = {
+      id: "none",
+      count: 0,
+      expires_at: "",
+      events: [],
+    };
+    return response;
   };
 
   const handleHandleClick = () => {
@@ -128,7 +131,7 @@ const AuditViewer = () => {
             borderRadius: "10px",
             background: theme.palette.background.paper,
             "& .react-json-view": {
-              backgroundColor: `#D3D3D3!important`,
+              backgroundColor: "#D3D3D3 !important",
               borderRadius: "2px",
             },
           }}
@@ -154,7 +157,7 @@ const AuditViewer = () => {
               // @ts-ignore
               onPageChange={handlePageChange}
               searchOnMount={true}
-              schema={schema}
+              schema={schema as unknown as Audit.Schema}
               visibilityModel={visibilityModel}
             />
           )}

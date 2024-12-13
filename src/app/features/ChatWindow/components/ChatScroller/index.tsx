@@ -1,15 +1,16 @@
-import { FC, useEffect, useMemo, useRef } from "react";
 import { CircularProgress, Stack } from "@mui/material";
-
-import { ChatMessage, useChatContext } from "@src/app/context";
-import {
-  UserPromptMessage,
-  LlmResponse,
-  AiGuardMessage,
-  PromptGuardMessage,
-} from "../ChatMessages";
 import { useAuth } from "@pangeacyber/react-auth";
+import { type FC, useCallback, useMemo } from "react";
+
+import { type ChatMessage, useChatContext } from "@src/app/context";
 import { Colors } from "@src/app/theme";
+
+import {
+  AiGuardMessage,
+  LlmResponse,
+  PromptGuardMessage,
+  UserPromptMessage,
+} from "../ChatMessages";
 
 interface Props {
   messages: ChatMessage[];
@@ -18,19 +19,14 @@ interface Props {
 const ChatScroller: FC<Props> = ({ messages }) => {
   const { user } = useAuth();
   const { loading, auditPanelOpen } = useChatContext();
-  const scollRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (scollRef.current && !loading) {
-      scollRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
-
-  useEffect(() => {
-    if (scollRef.current && !loading) {
-      scollRef.current.scrollIntoView();
-    }
-  }, [loading]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: scroll to the bottom whenever new messages appear
+  const scroller = useCallback(
+    (node: Element | null) => {
+      node?.scrollIntoView({ behavior: "smooth" });
+    },
+    [messages],
+  );
 
   const messageContent = useMemo(() => {
     return (
@@ -40,7 +36,7 @@ const ChatScroller: FC<Props> = ({ messages }) => {
             case "llm_response":
               return (
                 <LlmResponse
-                  message={message.output}
+                  message={message.output!}
                   key={`message-${message.hash}`}
                 />
               );
@@ -71,10 +67,9 @@ const ChatScroller: FC<Props> = ({ messages }) => {
               return null;
           }
         })}
-        <div ref={scollRef}></div>
       </Stack>
     );
-  }, [messages]);
+  }, [messages, user]);
 
   return (
     <Stack
@@ -90,7 +85,10 @@ const ChatScroller: FC<Props> = ({ messages }) => {
           <CircularProgress sx={{ color: Colors.secondary }} />
         </Stack>
       ) : (
-        <>{messageContent}</>
+        <>
+          {messageContent}
+          <div ref={scroller} />
+        </>
       )}
     </Stack>
   );

@@ -1,6 +1,6 @@
 import {
-  FC,
-  ReactNode,
+  type FC,
+  type ReactNode,
   createContext,
   useContext,
   useEffect,
@@ -54,10 +54,10 @@ export interface ChatProviderProps {
 export interface ChatMessage {
   hash: string;
   type: string;
-  context?: any;
+  context?: unknown;
   input?: string;
-  output?: any;
-  findings?: any;
+  output?: string;
+  findings?: string;
   malicious_count?: number;
 }
 
@@ -85,10 +85,10 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
       const storedSystemPrompt = localStorage.getItem(SYSTEM_PROMPT_KEY);
       const storedUserPrompt = localStorage.getItem(USER_PROMPT_KEY);
 
-      if (!!storedSystemPrompt) {
+      if (storedSystemPrompt) {
         setSystemPrompt(storedSystemPrompt);
       }
-      if (!!storedUserPrompt) {
+      if (storedUserPrompt) {
         setUserPrompt(storedUserPrompt);
       }
     }
@@ -130,14 +130,6 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
       sidePanelOpen,
       auditPanelOpen,
       loginOpen,
-      setLoading,
-      setSystemPrompt,
-      setUserPrompt,
-      setPromptGuardEnabled,
-      setDataGuardEnabled,
-      setSidePanelOpen,
-      setAuditPanelOpen,
-      setLoginOpen,
     ],
   );
 

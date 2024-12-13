@@ -44,7 +44,7 @@ export class GoogleDriveRetriever extends BaseRetriever {
 
   async _getRelevantDocuments(
     _query: string,
-    _runManager?: CallbackManagerForRetrieverRun
+    _runManager?: CallbackManagerForRetrieverRun,
   ): Promise<DocumentInterface<Record<string, unknown>>[]> {
     const results = await this.files.list({
       q: `'${this.folderId}' in parents and mimeType = 'application/vnd.google-apps.spreadsheet' and trashed = false`,
@@ -56,15 +56,15 @@ export class GoogleDriveRetriever extends BaseRetriever {
 
     const docs = await Promise.all(
       results.data.files.map((file) =>
-        file.id ? this._loadSheetFromFile(file.id) : Promise.resolve(null)
-      )
+        file.id ? this._loadSheetFromFile(file.id) : Promise.resolve(null),
+      ),
     );
 
     return docs.filter((doc) => doc !== null);
   }
 
   async _loadSheetFromFile(
-    fileId: string
+    fileId: string,
   ): Promise<DocumentInterface<Record<string, unknown>>> {
     const spreadsheet = await this.spreadsheets.get({ spreadsheetId: fileId });
     const sheets_ = spreadsheet.data.sheets ?? [];

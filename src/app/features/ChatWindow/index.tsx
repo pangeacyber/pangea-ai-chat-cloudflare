@@ -1,4 +1,4 @@
-import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
+import SendIcon from "@mui/icons-material/Send";
 import {
   Alert,
   Box,
@@ -12,22 +12,30 @@ import {
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import SendIcon from "@mui/icons-material/Send";
 import { useAuth } from "@pangeacyber/react-auth";
+import {
+  type ChangeEvent,
+  type KeyboardEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
+import { type ChatMessage, useChatContext } from "@src/app/context";
+import { Colors } from "@src/app/theme";
 import { DAILY_MAX_MESSAGES, PROMPT_MAX_CHARS } from "@src/const";
-import { useChatContext, ChatMessage } from "@src/app/context";
+import { rateLimitQuery } from "@src/utils";
+
+import ChatScroller from "./components/ChatScroller";
 import {
   auditSearch,
   auditUserPrompt,
   callInputDataGuard,
-  callResponseDataGuard,
   callPromptGuard,
+  callResponseDataGuard,
   sendUserMessage,
 } from "./utils";
-import ChatScroller from "./components/ChatScroller";
-import { Colors } from "@src/app/theme";
-import { rateLimitQuery } from "@src/utils";
 
 function hashCode(str: string) {
   let hash = 0;
@@ -59,18 +67,21 @@ const ChatWindow = () => {
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>();
 
-  const processingError = (msg: string, status: number = 0) => {
-    if (status && status === 403) {
-      setError("Session expired, please log in again");
-      setProcessing("");
-      logout();
-      setLoginOpen(true);
-    } else {
-      setError(msg);
-      setProcessing("");
-      setOpen(true);
-    }
-  };
+  const processingError = useCallback(
+    (msg: string, status = 0) => {
+      if (status && status === 403) {
+        setError("Session expired, please log in again");
+        setProcessing("");
+        logout();
+        setLoginOpen(true);
+      } else {
+        setError(msg);
+        setProcessing("");
+        setOpen(true);
+      }
+    },
+    [logout, setLoginOpen],
+  );
 
   const handleSubmit = async () => {
     // require authentication
@@ -90,9 +101,9 @@ const ChatWindow = () => {
 
     const logEvent = {
       event: {
-        event_type: "user_prompt",
-        event_input: userPrompt,
-        event_context: JSON.stringify({
+        type: "user_prompt",
+        input: userPrompt,
+        context: JSON.stringify({
           system_prompt: systemPrompt,
         }),
       },
@@ -248,6 +259,7 @@ const ChatWindow = () => {
     }
   }, [authenticated, remaining, overlimit]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: TODO
   useEffect(() => {
     const loadSearchData = async () => {
       const token = user?.active_token?.token || "";
@@ -271,14 +283,15 @@ const ChatWindow = () => {
         // Load Chat history from audit log
         const response = await auditSearch(token, { limit: 50 });
 
+        // biome-ignore lint/suspicious/noExplicitAny: TODO
         const messages_: ChatMessage[] = response.events.map((event: any) => {
           const message: ChatMessage = {
             hash: event.hash,
-            type: event.envelope.event.event_type,
-            context: event.envelope.event.event_context,
-            input: event.envelope.event.event_input,
-            output: event.envelope.event.event_output,
-            findings: event.envelope.event.event_findings,
+            type: event.envelope.event.type,
+            context: event.envelope.event.context,
+            input: event.envelope.event.input,
+            output: event.envelope.event.output,
+            findings: event.envelope.event.findings,
             malicious_count: event.envelope.event.malicious_entity_count,
           };
           return message;
