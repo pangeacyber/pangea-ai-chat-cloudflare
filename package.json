@@ -25,12 +25,14 @@
     "@mui/material": "6.1.10",
     "@pangeacyber/react-auth": "^0.0.14",
     "@pangeacyber/react-mui-audit-log-viewer": "^1.0.5",
+    "@t3-oss/env-nextjs": "0.11.1",
     "langchain": "0.3.7",
     "markdown-table": "3.0.4",
     "next": "14.2.20",
     "pangea-node-sdk": "4.2.0-beta.2",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "zod": "3.24.1"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",

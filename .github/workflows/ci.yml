@@ -66,8 +66,10 @@ jobs:
 
       - name: Build
         env:
-          NEXT_PUBLIC_PANGEA_CLIENT_TOKEN: placeholder
-          PANGEA_SERVICE_TOKEN: placeholder
+          NEXT_PUBLIC_AUTHN_UI_URL: placeholder
+          NEXT_PUBLIC_PANGEA_CLIENT_TOKEN: pcl_placeholder
+          PANGEA_AUDIT_CONFIG_ID: pci_placeholder
+          PANGEA_SERVICE_TOKEN: pts_pts_placeholder
         run: npm run build
 
   lint:
