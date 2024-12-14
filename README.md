@@ -84,6 +84,8 @@ There are several values that need to be filled out in `.dev.vars`:
   `credentials.json` from earlier with its whitespace removed until it fits in a
   single line.
 - `GOOGLE_DRIVE_FOLDER_ID`: Google Drive folder ID.
+- `INGEST_TOKEN`: A randomly-generated value that will the API token necessary
+  for initiating ingestion of new vectors.
 
 ## Usage
 
