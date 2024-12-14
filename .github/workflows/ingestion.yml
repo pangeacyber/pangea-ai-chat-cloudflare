@@ -1,0 +1,48 @@
+name: Ingestion
+
+on:
+  workflow_dispatch:
+    inputs:
+      chat-domain:
+        type: string
+        required: true
+        default: pangea-ai-chat.pages.dev
+        description: Pangea AI Chat domain.
+      pangea-domain:
+        type: string
+        required: true
+        default: aws.us.pangea.cloud
+        description: Pangea API domain.
+      wipe-tuples:
+        type: boolean
+        required: true
+        default: false
+        description: Wipe existing tuples.
+
+jobs:
+  ingest:
+    name: Ingestion
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Update AuthZ tuples
+        run: npm run ingest -- --chatDomain ${{ inputs.chat-domain }} --wipeTuples ${{ inputs.wipe-tuples }}
+        env:
+          NEXT_PUBLIC_PANGEA_BASE_DOMAIN: ${{ inputs.pangea-domain }}
+          GOOGLE_DRIVE_CREDENTIALS: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          INGEST_TOKEN: ${{ secrets.INGEST_TOKEN }}
+          PANGEA_SERVICE_TOKEN: ${{ secrets.PANGEA_SERVICE_TOKEN }}

@@ -14,7 +14,8 @@
     "prepreview": "npm run -s pages:build",
     "preview": "wrangler pages dev --ip 0.0.0.0",
     "predeploy": "npm run -s pages:build",
-    "deploy": "wrangler pages deploy"
+    "deploy": "wrangler pages deploy",
+    "ingest": "tsx scripts/ingest.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -38,13 +39,15 @@
     "@biomejs/biome": "1.9.4",
     "@cloudflare/next-on-pages": "1.13.7",
     "@cloudflare/workers-types": "4.20241205.0",
-    "@dotenvx/dotenvx": "^1.29.0",
+    "@dotenvx/dotenvx": "1.29.0",
     "@googleapis/drive": "8.14.0",
     "@googleapis/sheets": "9.3.1",
     "@tsconfig/next": "2.0.3",
     "@types/node": "^22.10.2",
     "@types/react": "^18.3.16",
     "@types/react-dom": "^18.3.5",
+    "citty": "0.1.6",
+    "tsx": "4.19.2",
     "typescript": "^5.7.2",
     "ultracite": "4.1.12",
     "wrangler": "3.95.0"
