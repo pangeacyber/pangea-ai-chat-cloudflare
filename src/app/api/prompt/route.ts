@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     await auditLogRequest(auditLogData);
   } catch (_) {}
 
-  return Response.json(response.result);
+  return Response.json(response);
 }
 
 export const runtime = "edge";

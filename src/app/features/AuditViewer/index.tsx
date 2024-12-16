@@ -124,8 +124,8 @@ const AuditViewer = () => {
           gap={2}
           sx={{
             width: sidePanelOpen
-              ? "calc(100vw - 375px)"
-              : "calc(100vw - 130px)",
+              ? "calc(100vw - 860px)"
+              : "calc(100vw - 580px)",
             marginBottom: "20px",
             padding: "20px",
             borderRadius: "10px",
