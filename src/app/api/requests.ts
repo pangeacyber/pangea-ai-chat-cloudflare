@@ -1,16 +1,8 @@
 import type { NextRequest } from "next/server";
+import type { Audit, AuthZ } from "pangea-node-sdk";
 
+import type { PangeaResponse } from "@src/types";
 import { delay } from "@src/utils";
-import type { Audit } from "pangea-node-sdk";
-
-export interface ResponseObject<M> {
-  request_id: string;
-  request_time: string;
-  response_time: string;
-  status: string;
-  result: M;
-  summary: string;
-}
 
 type ValidatedToken =
   | { success: true; username: string; profile: Record<string, string> }
@@ -80,6 +72,23 @@ export async function auditSearchRequest(data: object) {
   return response.result;
 }
 
+export async function authzCheckRequest(
+  data: AuthZ.CheckRequest,
+): Promise<
+  PangeaResponse<AuthZ.CheckResult> | { result: { allowed: boolean } }
+> {
+  const url = getUrl("authz", "v1/check");
+  const { success, response } = await postRequest<AuthZ.CheckResult>(url, data);
+
+  if (!success) {
+    // biome-ignore lint/suspicious/noExplicitAny: casting for error case.
+    console.log("AUTHZ CHECK ERROR:", (response.result as any).errors);
+    return { result: { allowed: false } };
+  }
+
+  return response;
+}
+
 export async function postRequest<T>(
   url: string,
   body: unknown,
@@ -95,7 +104,7 @@ export async function postRequest<T>(
     response = await handleAsync(response);
   }
 
-  const json: ResponseObject<T> = await response.json();
+  const json: PangeaResponse<T> = await response.json();
   const success = json.status === "Success";
 
   return { success, response: json };
@@ -111,8 +120,8 @@ export async function getRequest(url: string) {
 }
 
 async function handleAsync(response: Response): Promise<Response> {
-  const data: ResponseObject<unknown> = await response.json();
-  const url = `https://${process.env.NEXT_PUBLIC_PANGEA_BASE_DOMAIN}/request/${data?.request_id}`;
+  const data: PangeaResponse<{ location: string }> = await response.json();
+  const url = data.result.location;
   const maxRetries = 3;
   let retryCount = 1;
 

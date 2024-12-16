@@ -5,7 +5,7 @@
   "type": "module",
   "browserslist": ["last 1 Firefox version", "last 1 Chrome version"],
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev",
     "build": "next build",
     "prestart": "npm run -s build",
     "start": "next start",
@@ -18,6 +18,7 @@
     "ingest": "tsx scripts/ingest.ts"
   },
   "dependencies": {
+    "@emotion/css": "11.13.5",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@langchain/cloudflare": "0.1.0",
@@ -27,12 +28,15 @@
     "@pangeacyber/react-auth": "^0.0.14",
     "@pangeacyber/react-mui-audit-log-viewer": "^1.0.5",
     "@t3-oss/env-nextjs": "0.11.1",
+    "hast-util-to-jsx-runtime": "2.3.2",
     "langchain": "0.3.7",
     "markdown-table": "3.0.4",
     "next": "14.2.20",
     "pangea-node-sdk": "4.2.0-beta.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-json-view-lite": "2.0.1",
+    "shiki": "1.24.2",
     "zod": "3.24.1"
   },
   "devDependencies": {

@@ -82,7 +82,12 @@ export class GoogleDriveRetriever extends BaseRetriever {
       return {
         id: fileId,
         pageContent: markdownTable(values),
-        metadata: {},
+        metadata: {
+          // This duplicates the higher-level document ID but it's ultimately
+          // how the document ID will be propagated to Vectorize and used later
+          // for the AuthZ check.
+          documentId: fileId,
+        },
       };
     }
 

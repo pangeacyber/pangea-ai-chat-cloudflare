@@ -18,6 +18,14 @@ export const Colors = {
   icons: "#94979C",
   borders: "#797C7F",
   card: "#16181A",
+  jsonView: {
+    container: "rgb(51, 53, 55)",
+    label: "rgb(248, 194, 102)",
+    stringValue: "rgb(255, 255, 255)",
+  },
+  shiki: {
+    background: "rgb(51, 53, 55)",
+  },
 };
 
 const PangeaDark = () => {

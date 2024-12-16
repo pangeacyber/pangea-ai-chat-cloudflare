@@ -11,19 +11,20 @@ export const sendUserMessage = async (
   token: string,
   message: string,
   system: string,
-): Promise<string> => {
-  const response = await aiProxyRequest(token, {
+  authz = false,
+) => {
+  return await aiProxyRequest(token, {
+    authz,
     userPrompt: message,
     systemPrompt: system,
   });
-  return response.content;
 };
 
 export const callPromptGuard = async (
   token: string,
   userPrompt: string,
   systemPrompt: string,
-): Promise<{ detected: boolean }> => {
+) => {
   const messages = [
     {
       content: userPrompt,

@@ -8,15 +8,16 @@ import { useAuth } from "@pangeacyber/react-auth";
 
 import CollapsablePanel from "@app/components/CollapsablePanel";
 import { useChatContext } from "@app/context";
-
 import ServiceToggle from "./ServiceToggle";
 
 const SecurityControls = () => {
   const { authenticated } = useAuth();
   const {
+    authzEnabled,
     dataGuardEnabled,
     promptGuardEnabled,
     auditPanelOpen,
+    setAuthzEnabled,
     setDataGuardEnabled,
     setPromptGuardEnabled,
     setAuditPanelOpen,
@@ -46,6 +47,15 @@ const SecurityControls = () => {
           changeHandler={() => {
             setDataGuardEnabled(!dataGuardEnabled);
           }}
+        />
+
+        <ServiceToggle
+          icon={<LockOutlined />}
+          name="AuthZ"
+          link="https://pangea.cloud/docs/api/authz"
+          active={authzEnabled}
+          type="toggle"
+          changeHandler={() => setAuthzEnabled(!authzEnabled)}
         />
 
         <ServiceToggle
