@@ -38,7 +38,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Update AuthZ tuples
+      - name: Ingest
         run: npm run ingest -- --chatDomain ${{ inputs.chat-domain }} --wipeTuples ${{ inputs.wipe-tuples }}
         env:
           NEXT_PUBLIC_PANGEA_BASE_DOMAIN: ${{ inputs.pangea-domain }}
