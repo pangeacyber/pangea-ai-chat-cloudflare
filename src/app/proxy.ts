@@ -50,6 +50,7 @@ const baseProxyRequest = async <T = unknown>(
     credentials: "same-origin",
     headers: {
       Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
   });
 
