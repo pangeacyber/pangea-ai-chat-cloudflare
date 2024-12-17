@@ -63,7 +63,7 @@ npx wrangler vectorize create pangea-ai-chat --dimensions=768 --metric=cosine
 
 ### Repository
 
-```
+```shell
 git clone https://github.com/pangeacyber/pangea-ai-chat-cloudflare.git
 cd pangea-ai-chat-cloudflare
 npm ci
