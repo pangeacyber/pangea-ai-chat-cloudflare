@@ -55,12 +55,6 @@ After activating AuthN:
 4. Under AuthN > Overview, note the "Client Token" and "Hosted Login" values for
    later.
 
-### Cloudflare Vectorize
-
-```
-npx wrangler vectorize create pangea-ai-chat --dimensions=768 --metric=cosine
-```
-
 ### Repository
 
 ```shell
@@ -87,15 +81,38 @@ There are several values that need to be filled out in `.dev.vars`:
 - `INGEST_TOKEN`: A randomly-generated value that will be the API token
   necessary for initiating ingestion of new vectors.
 
-## Usage
+### Cloudflare Vectorize
+
+The Cloudflare Vectorize database should be created like so:
+
+```shell
+npx wrangler vectorize create pangea-ai-chat --dimensions=768 --metric=cosine
+```
+
+## Local deployment
 
 A development version of the app can be started with:
 
-```
+```shell
 npm run dev
 ```
 
 Then navigate to <http://localhost:3000>.
+
+## Remote deployment
+
+This repository is automatically deployed to Cloudflare Pages on every push via
+Cloudflare's [Git integration][]. However, a manual deployment from a local
+system may be done with:
+
+```shell
+npx wrangler pages deploy
+```
+
+Don't forget to set the same environment variables as before on the Settings
+page of the Cloudflare Pages project:
+
+![Cloudflare Pages environment variables](.github/assets/cloudflare-pages-environment-variables.png)
 
 [AI Guard]: https://pangea.cloud/docs/ai-guard/
 [Prompt Guard]: https://pangea.cloud/docs/prompt-guard/
@@ -103,3 +120,4 @@ Then navigate to <http://localhost:3000>.
 [Google Drive API]: https://console.cloud.google.com/flows/enableapi?apiid=drive.googleapis.com
 [Google Sheets API]: https://console.cloud.google.com/flows/enableapi?apiid=sheets.googleapis.com
 [retrieve-the-google-docs]: https://python.langchain.com/docs/integrations/retrievers/google_drive/#retrieve-the-google-docs
+[Git integration]: https://developers.cloudflare.com/pages/configuration/git-integration/
