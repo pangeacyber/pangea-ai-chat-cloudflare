@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import type { Audit, AuthZ } from "pangea-node-sdk";
 
+import { env } from "@src/env";
 import type { PangeaResponse } from "@src/types";
 import { delay } from "@src/utils";
 
@@ -136,7 +137,7 @@ async function handleAsync(response: Response): Promise<Response> {
 }
 
 export function getUrl(service: string, endpoint: string): string {
-  return `https://${service}.${process.env.NEXT_PUBLIC_PANGEA_BASE_DOMAIN}/${endpoint}`;
+  return `https://${service}.${env.NEXT_PUBLIC_PANGEA_BASE_DOMAIN}/${endpoint}`;
 }
 
 export function getHeaders(useClientToken = false) {
