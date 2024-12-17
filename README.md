@@ -108,7 +108,7 @@ Cloudflare's [Git integration][]. However, a manual deployment from a local
 system may be done with:
 
 ```shell
-npx wrangler pages deploy
+npm run deploy
 ```
 
 Don't forget to set the same environment variables as before on the Settings
