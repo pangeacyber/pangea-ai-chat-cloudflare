@@ -50,10 +50,10 @@ export async function POST(request: NextRequest) {
       response,
       process.env.PANGEA_SERVICE_TOKEN,
     );
-    return new Response(JSON.stringify(response), { status: 400 });
+    return Response.json(response, { status: 400 });
   }
 
-  return new Response(JSON.stringify(response.result));
+  return Response.json(response.result);
 }
 
 export const runtime = "edge";
