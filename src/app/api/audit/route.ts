@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     console.warn("Caller is not authenticated.");
     return Response.json(
       { error: "Missing or invalid authentication details." },
-      { status: 401 },
+      { status: 403 },
     );
   }
 
