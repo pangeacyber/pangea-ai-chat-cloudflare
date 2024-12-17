@@ -9,12 +9,26 @@ export async function POST(request: NextRequest) {
   const { success: authenticated, username } = await validateToken(request);
 
   if (!(authenticated && username)) {
-    return new Response("Forbidden", { status: 403 });
+    console.warn("Caller is not authenticated.");
+    return Response.json(
+      { error: "Missing or invalid authentication details." },
+      { status: 401 },
+    );
   }
 
   const action = request.nextUrl.searchParams.get("action");
   // biome-ignore lint/suspicious/noExplicitAny: TODO
-  const body: any = await request.json();
+  let body: any = null;
+  try {
+    body = await request.json();
+  } catch (e) {
+    console.warn("Error parsing request body", e);
+    return Response.json(
+      { error: "Could not parse input JSON." },
+      { status: 400 },
+    );
+  }
+
   body.config_id = process.env.PANGEA_AUDIT_CONFIG_ID;
 
   let endpoint = "";
