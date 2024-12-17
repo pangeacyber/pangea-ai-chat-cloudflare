@@ -3,6 +3,8 @@
 An example webapp on Cloudflare demonstrating Pangea's [AI Guard][] and
 [Prompt Guard][] services.
 
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/pangeacyber/pangea-ai-chat-cloudflare)
+
 ## Prerequisites
 
 - Node.js v22.
