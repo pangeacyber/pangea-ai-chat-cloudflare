@@ -1,5 +1,5 @@
 import { getRequestContext } from "@cloudflare/next-on-pages";
-import type { VectorizeIndex } from "@cloudflare/workers-types/experimental";
+import type { VectorizeIndex } from "@cloudflare/workers-types";
 import {
   CloudflareVectorizeStore,
   CloudflareWorkersAIEmbeddings,

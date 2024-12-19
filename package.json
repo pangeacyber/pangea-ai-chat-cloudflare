@@ -42,7 +42,7 @@
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@cloudflare/next-on-pages": "1.13.7",
-    "@cloudflare/workers-types": "4.20241205.0",
+    "@cloudflare/workers-types": "4.20241216.0",
     "@dotenvx/dotenvx": "1.31.0",
     "@googleapis/drive": "8.14.0",
     "@googleapis/sheets": "9.3.1",
