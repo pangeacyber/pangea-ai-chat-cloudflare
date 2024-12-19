@@ -62,7 +62,7 @@ After activating AuthN:
 ```shell
 git clone https://github.com/pangeacyber/pangea-ai-chat-cloudflare.git
 cd pangea-ai-chat-cloudflare
-npm ci
+npm install
 cp .dev.vars.example .dev.vars
 ```
 
@@ -82,6 +82,9 @@ There are several values that need to be filled out in `.dev.vars`:
 - `GOOGLE_DRIVE_FOLDER_ID`: Google Drive folder ID.
 - `INGEST_TOKEN`: A randomly-generated value that will be the API token
   necessary for initiating ingestion of new vectors.
+- `CLOUDFLARE_ACCOUNT_ID`: Cloudflare account ID.
+- `CLOUDFLARE_API_TOKEN`: Cloudflare API token with access to Workers AI and
+  Vectorize.
 
 ### Cloudflare Vectorize
 
@@ -93,9 +96,19 @@ npx wrangler vectorize create pangea-ai-chat --dimensions=768 --metric=cosine
 
 ## Local deployment
 
-A development version of the app can be started with:
+A local version of the app can be started with:
 
 ```shell
+npm run preview
+```
+
+Then navigate to <http://localhost:8788>.
+
+Alternatively, the Next.js development server is also available, but requires
+copying the environment variables file:
+
+```shell
+cp .dev.vars .env
 npm run dev
 ```
 
