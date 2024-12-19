@@ -7,13 +7,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "prestart": "npm run -s build",
+    "prestart": "dotenvx run -f .dev.vars -- npm run -s build",
     "start": "next start",
     "lint": "biome check .",
     "pages:build": "npx @cloudflare/next-on-pages",
-    "prepreview": "npm run -s pages:build",
-    "preview": "wrangler pages dev --ip 0.0.0.0",
-    "predeploy": "npm run -s pages:build",
+    "prepreview": "dotenvx run -f .dev.vars -- npm run -s pages:build",
+    "preview": "wrangler pages dev --experimental-vectorize-bind-to-prod --ip 0.0.0.0",
+    "predeploy": "dotenvx run -f .dev.vars -- npm run -s pages:build",
     "deploy": "wrangler pages deploy",
     "ingest": "tsx scripts/ingest.ts"
   },
