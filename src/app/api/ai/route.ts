@@ -1,8 +1,5 @@
 import { getRequestContext } from "@cloudflare/next-on-pages";
-import type {
-  Ai,
-  VectorizeIndex,
-} from "@cloudflare/workers-types/experimental";
+import type { Ai, VectorizeIndex } from "@cloudflare/workers-types";
 import {
   ChatCloudflareWorkersAI,
   CloudflareVectorizeStore,
