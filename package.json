@@ -54,6 +54,6 @@
     "tsx": "4.19.2",
     "typescript": "^5.7.2",
     "ultracite": "4.1.14",
-    "wrangler": "3.98.0"
+    "wrangler": "3.99.0"
   }
 }
