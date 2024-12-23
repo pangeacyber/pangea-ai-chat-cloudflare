@@ -43,7 +43,7 @@
     "@biomejs/biome": "1.9.4",
     "@cloudflare/next-on-pages": "1.13.7",
     "@cloudflare/workers-types": "4.20241218.0",
-    "@dotenvx/dotenvx": "1.31.0",
+    "@dotenvx/dotenvx": "1.31.1",
     "@googleapis/drive": "8.14.0",
     "@googleapis/sheets": "9.3.1",
     "@tsconfig/next": "2.0.3",
