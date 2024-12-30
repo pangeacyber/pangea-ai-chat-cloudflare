@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
   const { env } = getRequestContext();
   const embeddingsModel = new CloudflareWorkersAIEmbeddings({
     binding: env.AI,
+    model: "@cf/baai/bge-base-en-v1.5",
   });
 
   const { success, username, profile } = await validateToken(request);
