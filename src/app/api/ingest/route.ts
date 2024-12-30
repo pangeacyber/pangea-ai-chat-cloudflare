@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
 
   const embeddingsModel = new CloudflareWorkersAIEmbeddings({
     binding: env.AI,
+    model: "@cf/baai/bge-base-en-v1.5",
   });
   const vectorStore = new CloudflareVectorizeStore(embeddingsModel, {
     index: env.VECTORIZE,
