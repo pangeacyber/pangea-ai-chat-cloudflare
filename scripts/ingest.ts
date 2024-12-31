@@ -89,7 +89,7 @@ const main = defineCommand({
     await authz.tupleCreate({ tuples });
 
     console.log("Creating vectors...");
-    await fetch(`${args.chatHost}/api/ingest`, {
+    const response = await fetch(`${args.chatHost}/api/ingest`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.INGEST_TOKEN}`,
@@ -97,6 +97,12 @@ const main = defineCommand({
       },
       body: JSON.stringify({ documents: docs }),
     });
+    if (!response.ok) {
+      console.warn("Failed to create vectors.");
+      console.error(response.status, response.statusText);
+      console.error(await response.text());
+      process.exit(1);
+    }
 
     console.log("Done.");
   },

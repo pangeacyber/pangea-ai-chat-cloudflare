@@ -8,8 +8,8 @@ An example webapp on Cloudflare demonstrating Pangea's [AI Guard][] and
 ## Prerequisites
 
 - Node.js v22.
-- A [Pangea account][Pangea signup] with AI Guard, Prompt Guard, AuthN, and
-  Secure Audit Log enabled.
+- A [Pangea account][Pangea signup] with AI Guard, Prompt Guard, AuthN, AuthZ,
+  and Secure Audit Log enabled.
 - A Cloudflare account.
 - A Google Drive folder containing spreadsheets.
 
@@ -56,6 +56,15 @@ After activating AuthN:
 3. Under AuthN > General > Social (OAuth), enable Google.
 4. Under AuthN > Overview, note the "Client Token" and "Hosted Login" values for
    later.
+
+### Pangea AuthZ
+
+Set the authorization schema to the built-in
+[File Drive][reset-authorization-schema] schema.
+
+### Pangea Secure Audit Log
+
+Use the built-in AI Audit Log Schema configuration.
 
 ### Repository
 
@@ -136,3 +145,4 @@ page of the Cloudflare Pages project:
 [Google Sheets API]: https://console.cloud.google.com/flows/enableapi?apiid=sheets.googleapis.com
 [retrieve-the-google-docs]: https://python.langchain.com/docs/integrations/retrievers/google_drive/#retrieve-the-google-docs
 [Git integration]: https://developers.cloudflare.com/pages/configuration/git-integration/
+[reset-authorization-schema]: https://pangea.cloud/docs/authz/general#reset-authorization-schema
