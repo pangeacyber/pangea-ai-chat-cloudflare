@@ -38,7 +38,7 @@ const main = defineCommand({
     chatHost: {
       type: "string",
       default: "https://pangea-ai-chat.pages.dev",
-      description: "The chat domain to use.",
+      description: "The chat host to use.",
     },
     wipeTuples: {
       type: "boolean",
