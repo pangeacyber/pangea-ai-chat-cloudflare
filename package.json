@@ -12,7 +12,7 @@
     "lint": "biome check .",
     "pages:build": "npx @cloudflare/next-on-pages",
     "prepreview": "npm run -s pages:build",
-    "preview": "wrangler pages dev --ip 0.0.0.0",
+    "preview": "wrangler pages dev --experimental-vectorize-bind-to-prod --ip 0.0.0.0",
     "predeploy": "npm run -s pages:build",
     "deploy": "wrangler pages deploy",
     "ingest": "tsx scripts/ingest.ts"

@@ -35,10 +35,10 @@ const authz = new AuthZService(
 
 const main = defineCommand({
   args: {
-    chatDomain: {
+    chatHost: {
       type: "string",
-      default: "pangea-ai-chat.pages.dev",
-      description: "The chat domain to use.",
+      default: "https://pangea-ai-chat.pages.dev",
+      description: "The chat host to use.",
     },
     wipeTuples: {
       type: "boolean",
@@ -89,7 +89,7 @@ const main = defineCommand({
     await authz.tupleCreate({ tuples });
 
     console.log("Creating vectors...");
-    const response = await fetch(`https://${args.chatDomain}/api/ingest`, {
+    const response = await fetch(`${args.chatHost}/api/ingest`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.INGEST_TOKEN}`,

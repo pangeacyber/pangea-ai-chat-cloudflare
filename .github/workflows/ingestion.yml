@@ -3,11 +3,11 @@ name: Ingestion
 on:
   workflow_dispatch:
     inputs:
-      chat-domain:
+      chat-host:
         type: string
         required: true
-        default: pangea-ai-chat.pages.dev
-        description: Pangea AI Chat domain.
+        default: https://pangea-ai-chat.pages.dev
+        description: Pangea AI Chat host.
       pangea-domain:
         type: string
         required: true
@@ -39,7 +39,7 @@ jobs:
         run: npm ci
 
       - name: Ingest
-        run: npm run ingest -- --chatDomain ${{ inputs.chat-domain }} --wipeTuples ${{ inputs.wipe-tuples }}
+        run: npm run ingest -- --chatHost ${{ inputs.chat-host }} --wipeTuples ${{ inputs.wipe-tuples }}
         env:
           NEXT_PUBLIC_PANGEA_BASE_DOMAIN: ${{ inputs.pangea-domain }}
           GOOGLE_DRIVE_CREDENTIALS: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
