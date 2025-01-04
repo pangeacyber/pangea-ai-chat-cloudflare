@@ -22,7 +22,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@langchain/cloudflare": "0.1.0",
-    "@langchain/core": "0.3.26",
+    "@langchain/core": "0.3.27",
     "@mui/icons-material": "6.3.0",
     "@mui/material": "6.3.0",
     "@pangeacyber/react-auth": "^0.0.14",
