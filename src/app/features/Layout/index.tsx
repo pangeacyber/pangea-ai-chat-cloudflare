@@ -2,6 +2,7 @@ import { Box, Button, Drawer, Modal, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useAuth } from "@pangeacyber/react-auth";
 
+import RightSideBar from "@app/components/RightSideBar";
 import SideBar from "@app/components/SideBar";
 import { useChatContext } from "@app/context";
 import { Colors } from "@app/theme";
@@ -14,9 +15,12 @@ import SidePanel from "../SidePanel";
 
 const panelOpenWidth = 330;
 
-const Main = styled(Stack, { shouldForwardProp: (prop) => prop !== "open" })<{
-  open?: boolean;
-}>(({ theme, open }) => ({
+const Main = styled(Stack, {
+  shouldForwardProp: (prop) => prop !== "leftOpen" && prop !== "rightOpen",
+})<{
+  leftOpen?: boolean;
+  rightOpen?: boolean;
+}>(({ theme, leftOpen, rightOpen }) => ({
   flexGrow: 1,
   width: "100%",
   height: "100vh",
@@ -26,19 +30,34 @@ const Main = styled(Stack, { shouldForwardProp: (prop) => prop !== "open" })<{
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
+
   marginLeft: `-${panelOpenWidth}px`,
-  ...(open && {
+  ...(leftOpen && {
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
     marginLeft: 0,
   }),
+
+  ...(rightOpen && {
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginRight: 0,
+  }),
 }));
 
 const Layout = () => {
-  const { sidePanelOpen, loginOpen, setSidePanelOpen, setLoginOpen } =
-    useChatContext();
+  const {
+    sidePanelOpen,
+    rightPanelOpen,
+    loginOpen,
+    setSidePanelOpen,
+    setRightPanelOpen,
+    setLoginOpen,
+  } = useChatContext();
   const { login } = useAuth();
 
   const handlePanelOpen = () => {
@@ -73,27 +92,36 @@ const Layout = () => {
         >
           <SidePanel open={sidePanelOpen} onClose={handlePanelClose} />
         </Drawer>
-        <Main open={sidePanelOpen}>
+        <Main leftOpen={sidePanelOpen} rightOpen={rightPanelOpen}>
           <ChatWindow />
           <Stack alignItems="center">
             <AuditViewer />
           </Stack>
         </Main>
+
+        {!rightPanelOpen && (
+          <RightSideBar handleClick={() => setRightPanelOpen(true)} />
+        )}
         <Drawer
           sx={{
-            width: panelOpenWidth * 1.5,
             flexShrink: 0,
+            ...(rightPanelOpen && {
+              width: panelOpenWidth * 1.5,
+            }),
             "& .MuiDrawer-paper": {
               width: panelOpenWidth * 1.5,
               boxSizing: "border-box",
               borderLeft: "none",
             },
           }}
-          open={true}
-          variant="permanent"
+          open={rightPanelOpen}
+          variant="persistent"
           anchor="right"
         >
-          <ResponsesSidePanel open={true} onClose={() => {}} />
+          <ResponsesSidePanel
+            open={rightPanelOpen}
+            onClose={() => setRightPanelOpen(false)}
+          />
         </Drawer>
       </Box>
       <Modal open={loginOpen} onClose={handleLoginClose}>
