@@ -6,6 +6,9 @@
       "complexity": {
         "noExcessiveCognitiveComplexity": "off"
       },
+      "nursery": {
+        "noNestedTernary": "off"
+      },
       "style": {
         "noNonNullAssertion": "off",
         "noParameterAssign": "off",

@@ -1,5 +1,6 @@
 import { css } from "@emotion/css";
-import { GlobalStyles, Stack, Typography } from "@mui/material";
+import ViewSidebarOutlinedIcon from "@mui/icons-material/ViewSidebarOutlined";
+import { GlobalStyles, IconButton, Stack } from "@mui/material";
 import { type FC, type JSX, useLayoutEffect, useState } from "react";
 import { JsonView, darkStyles } from "react-json-view-lite";
 
@@ -68,9 +69,9 @@ const ResponsesSidePanel: FC<Props> = ({ onClose }) => {
     >
       <Stack ml="20px">
         <PanelHeader>
-          <Stack direction="row" gap={1} p="24px 20px">
-            <Typography variant="h6">Responses</Typography>
-          </Stack>
+          <IconButton onClick={onClose}>
+            <ViewSidebarOutlinedIcon sx={{ color: Colors.icons }} />
+          </IconButton>
         </PanelHeader>
 
         <CollapsablePanel title="Prompt Guard">
