@@ -32,7 +32,7 @@ declare global {
 }
 
 const llm = new ChatCloudflareWorkersAI({
-  model: "@cf/meta/llama-2-7b-chat-int8",
+  model: "@hf/mistral/mistral-7b-instruct-v0.2",
 });
 const chain = llm.pipe(new StringOutputParser());
 
