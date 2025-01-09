@@ -120,6 +120,7 @@ const ResponsesSidePanel: FC<Props> = ({ onClose }) => {
                   borderRadius: "10px",
                   margin: 0,
                   padding: "7px",
+                  textWrap: "inherit",
                 },
               }}
             />
