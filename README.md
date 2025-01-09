@@ -34,7 +34,8 @@ An example webapp on Cloudflare demonstrating Pangea's [AI Guard][] and
     access to all spreadsheets within
   - The other user (e.g. Bob) will act as an employee with read access to their
     single spreadsheet
-- A Google Cloud project with the [Google Drive API][] and [Google Sheets API][] enabled.
+- A Google Cloud project with the [Google Docs API][], [Google Drive API][], and
+  [Google Sheets API][] enabled.
 - A Google service account:
   1. In your Google Cloud project, go to IAM & Admin > Service Accounts (using
      the navigation menu in the top left) and create a new service account.
@@ -141,6 +142,7 @@ page of the Cloudflare Pages project:
 [AI Guard]: https://pangea.cloud/docs/ai-guard/
 [Prompt Guard]: https://pangea.cloud/docs/prompt-guard/
 [Pangea signup]: https://pangea.cloud/signup
+[Google Docs API]: https://console.cloud.google.com/flows/enableapi?apiid=docs.googleapis.com
 [Google Drive API]: https://console.cloud.google.com/flows/enableapi?apiid=drive.googleapis.com
 [Google Sheets API]: https://console.cloud.google.com/flows/enableapi?apiid=sheets.googleapis.com
 [retrieve-the-google-docs]: https://python.langchain.com/docs/integrations/retrievers/google_drive/#retrieve-the-google-docs
