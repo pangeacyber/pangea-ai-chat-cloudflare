@@ -8,7 +8,7 @@ import {
 } from "../requests";
 
 const SERVICE_NAME = "prompt-guard";
-const API_VERSION = "v1beta";
+const API_VERSION = "v1";
 
 export async function POST(request: NextRequest) {
   const { success: authenticated, username } = await validateToken(request);

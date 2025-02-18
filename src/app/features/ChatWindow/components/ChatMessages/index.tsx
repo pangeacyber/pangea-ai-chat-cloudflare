@@ -4,13 +4,7 @@ import type { FC } from "react";
 
 import PangeaLogo from "@src/app/components/Logo";
 import { Colors } from "@src/app/theme";
-import type { AIGuardResultV1, AIGuardResultV2 } from "@src/types";
-
-function isAIGuardFindings(
-  x: AIGuardResultV1["findings"] | AIGuardResultV2["detectors"],
-): x is AIGuardResultV1["findings"] {
-  return "prompt_injection_count" in x || "security_issues" in x;
-}
+import type { AIGuardResult } from "@src/types";
 
 interface UserPromptProps {
   message: string;
@@ -86,34 +80,15 @@ export const LlmResponse: FC<LlmMessageProps> = ({ message }) => {
 };
 
 export const AiGuardMessage: FC<AiGuardProps> = ({ findings }) => {
-  const findingsJSON:
-    | AIGuardResultV1["findings"]
-    | AIGuardResultV2["detectors"] = JSON.parse(findings);
+  const findingsJSON: AIGuardResult["detectors"] = JSON.parse(findings);
 
-  let malicious = 0;
-  let injection = 0;
-  let redacted = 0;
-
-  if (isAIGuardFindings(findingsJSON)) {
-    malicious = findingsJSON?.malicious_count || 0;
-
-    // @ts-expect-error SDK interface is outdated.
-    injection = findingsJSON?.prompt_injection_count || 0;
-
-    // const artifacts = findingsJSON?.artifact_count || 0;
-    redacted = findingsJSON?.security_issues?.redact_rule_match_count || 0;
-    // const ips = findingsJSON?.security_issues?.malicious_ip_count || 0;
-    // const domains = findingsJSON?.security_issues?.malicious_domain_count || 0;
-    // const urls = findingsJSON?.security_issues?.malicious_url_count || 0;
-  } else {
-    malicious = findingsJSON?.malicious_entity?.data?.entities?.length || 0;
-    injection =
-      findingsJSON?.prompt_injection?.data?.analyzer_responses?.length || 0;
-    redacted =
-      findingsJSON?.pii_entity?.data?.entities?.filter(
-        (entity) => entity.redacted,
-      ).length || 0;
-  }
+  const malicious = findingsJSON?.malicious_entity?.data?.entities?.length || 0;
+  const injection =
+    findingsJSON?.prompt_injection?.data?.analyzer_responses?.length || 0;
+  const redacted =
+    findingsJSON?.pii_entity?.data?.entities?.filter(
+      (entity) => entity.action === "redacted",
+    ).length || 0;
 
   let result = "Findings: ";
   let addPipe = false;
@@ -135,7 +110,7 @@ export const AiGuardMessage: FC<AiGuardProps> = ({ findings }) => {
     if (addPipe) {
       result += " | ";
     }
-    result += `${malicious} malicous item${malicious > 1 ? "s" : ""}`;
+    result += `${malicious} malicious item${malicious > 1 ? "s" : ""}`;
     addPipe = true;
   }
 

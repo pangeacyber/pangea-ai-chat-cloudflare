@@ -27,7 +27,7 @@ import { type ChatMessage, useChatContext } from "@src/app/context";
 import { Colors } from "@src/app/theme";
 import { DAILY_MAX_MESSAGES, PROMPT_MAX_CHARS } from "@src/const";
 import type { AIGuardResult, PangeaResponse } from "@src/types";
-import { isAIGuardResultV2, rateLimitQuery } from "@src/utils";
+import { rateLimitQuery } from "@src/utils";
 
 import ChatScroller from "./components/ChatScroller";
 import {
@@ -166,22 +166,16 @@ const ChatWindow = () => {
         guardedInput = await callInputDataGuard(token, userPrompt);
         setAiGuardResponses([
           guardedInput,
-          {} as PangeaResponse<AIGuard.TextGuardResult>,
+          {} as PangeaResponse<AIGuard.TextGuardResult<unknown>>,
         ]);
         const dgiMsg: ChatMessage = {
           hash: hashCode(JSON.stringify(guardedInput)),
           type: "ai_guard",
-          findings: JSON.stringify(
-            isAIGuardResultV2(guardedInput.result)
-              ? guardedInput.result.detectors
-              : guardedInput.result.findings,
-          ),
+          findings: JSON.stringify(guardedInput.result.detectors),
         };
         setMessages((prevMessages) => [...prevMessages, dgiMsg]);
 
-        llmUserPrompt = isAIGuardResultV2(guardedInput.result)
-          ? guardedInput.result.prompt
-          : guardedInput.result.redacted_prompt;
+        llmUserPrompt = guardedInput.result.prompt_text!;
       } catch (err) {
         const status = err instanceof Response ? err.status : 0;
         processingError("AI Guard call failed, please try again", status);
@@ -228,17 +222,11 @@ const ChatWindow = () => {
         const dgrMsg: ChatMessage = {
           hash: hashCode(JSON.stringify(dataResp)),
           type: "ai_guard",
-          findings: JSON.stringify(
-            isAIGuardResultV2(dataResp.result)
-              ? dataResp.result.detectors
-              : dataResp.result.findings,
-          ),
+          findings: JSON.stringify(dataResp.result.detectors),
         };
         dataGuardMessages.push(dgrMsg);
 
-        llmResponse = isAIGuardResultV2(dataResp.result)
-          ? dataResp.result.prompt
-          : dataResp.result.redacted_prompt;
+        llmResponse = dataResp.result.prompt_text!;
       } catch (err) {
         const status = err instanceof Response ? err.status : 0;
         processingError("AI Guard call failed, please try again", status);

@@ -1,7 +1,6 @@
 import type { NextRequest } from "next/server";
 
 import type { AIGuardResult, PangeaResponse } from "@src/types";
-import { isAIGuardResultV2 } from "@src/utils";
 
 import {
   auditLogRequest,
@@ -11,7 +10,7 @@ import {
 } from "../requests";
 
 const SERVICE_NAME = "ai-guard";
-const API_VERSION = "v1beta";
+const API_VERSION = "v1";
 
 export async function POST(request: NextRequest) {
   const { success: authenticated, username } = await validateToken(request);
@@ -39,24 +38,14 @@ export async function POST(request: NextRequest) {
   const auditLogData = {
     event: {
       input: body.text,
-      output: JSON.stringify(
-        isAIGuardResultV2(response.result)
-          ? response.result.prompt
-          : response.result.redacted_prompt,
-      ),
+      output: JSON.stringify(response.result.prompt_text),
       type: "ai_guard",
       context: JSON.stringify({
         recipe: body.recipe,
       }),
-      findings: JSON.stringify(
-        isAIGuardResultV2(response.result)
-          ? response.result.detectors
-          : response.result.findings,
-      ),
-      malicious_entity_count: isAIGuardResultV2(response.result)
-        ? response.result.detectors.malicious_entity?.data?.entities?.length ||
-          0
-        : response.result.findings?.malicious_count || 0,
+      findings: JSON.stringify(response.result.detectors),
+      malicious_entity_count:
+        response.result.detectors.malicious_entity?.data?.entities?.length || 0,
       actor: username,
     },
   };
