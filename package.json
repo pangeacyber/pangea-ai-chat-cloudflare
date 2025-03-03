@@ -46,7 +46,7 @@
     "@dotenvx/dotenvx": "1.38.3",
     "@googleapis/docs": "3.3.0",
     "@googleapis/drive": "8.16.0",
-    "@googleapis/sheets": "9.3.1",
+    "@googleapis/sheets": "9.4.0",
     "@tsconfig/next": "2.0.3",
     "@types/node": "^22.13.5",
     "@types/react": "^18.3.18",
