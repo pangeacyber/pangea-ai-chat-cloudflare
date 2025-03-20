@@ -1,5 +1,15 @@
 import type { MessageFieldWithRole } from "@langchain/core/messages";
 
+export interface ChatMessage {
+  hash: string;
+  type: string;
+  context?: unknown;
+  input?: string;
+  output?: string;
+  findings?: string;
+  malicious_count?: number;
+}
+
 export interface PangeaResponse<T = unknown> {
   request_id: string;
   request_time: string;

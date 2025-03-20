@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Close,
   ExpandLess,
@@ -12,7 +14,7 @@ import {
   AuditLogViewer,
 } from "@pangeacyber/react-mui-audit-log-viewer";
 
-import { useChatContext } from "@app/context";
+import { useAppState } from "@app/context";
 import { Colors } from "@app/theme";
 import { auditProxyRequest } from "@src/app/proxy";
 
@@ -70,7 +72,7 @@ const AuditViewer = () => {
     auditPanelOpen,
     setAuditPanelOpen,
     setLoginOpen,
-  } = useChatContext();
+  } = useAppState();
 
   const handleSearch = async (body: Audit.SearchRequest) => {
     const token = user?.active_token?.token || "";

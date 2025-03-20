@@ -1,10 +1,12 @@
+"use client";
+
 import { Box, Button, Drawer, Modal, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useAuth } from "@pangeacyber/react-auth";
 
 import RightSideBar from "@app/components/RightSideBar";
 import SideBar from "@app/components/SideBar";
-import { useChatContext } from "@app/context";
+import { useAppState } from "@app/context";
 import { Colors } from "@app/theme";
 import PangeaLogo from "@src/app/components/Logo";
 
@@ -57,7 +59,7 @@ const Layout = () => {
     setSidePanelOpen,
     setRightPanelOpen,
     setLoginOpen,
-  } = useChatContext();
+  } = useAppState();
   const { login } = useAuth();
 
   const handlePanelOpen = () => {

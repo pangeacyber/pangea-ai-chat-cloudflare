@@ -1,3 +1,5 @@
+"use client";
+
 import type { DocumentInterface } from "@langchain/core/documents";
 import RestartAlt from "@mui/icons-material/RestartAlt";
 import SendIcon from "@mui/icons-material/Send";
@@ -24,11 +26,12 @@ import {
   useState,
 } from "react";
 
-import { type ChatMessage, useChatContext } from "@src/app/context";
+import { useAppState } from "@src/app/context";
 import { Colors } from "@src/app/theme";
 import { DAILY_MAX_MESSAGES, PROMPT_MAX_CHARS } from "@src/const";
 import type {
   AIGuardResult,
+  ChatMessage,
   DetectorOverrides,
   PangeaResponse,
 } from "@src/types";
@@ -74,7 +77,7 @@ const ChatWindow = () => {
     setAiGuardResponses,
     setAuthzResponses,
     setDocuments,
-  } = useChatContext();
+  } = useAppState();
   const { authenticated, user, logout } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [remaining, setRemaining] = useState(DAILY_MAX_MESSAGES);

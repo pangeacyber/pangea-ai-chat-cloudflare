@@ -1,18 +1,19 @@
 import type { DocumentInterface } from "@langchain/core/documents";
-import {
-  type FC,
-  type ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { Store, useStore } from "@tanstack/react-store";
 
 import type { PangeaResponse } from "@src/types";
 
-export interface ChatContextProps {
+interface Detectors {
+  code_detection: boolean;
+  language_detection: boolean;
+  malicious_entity: boolean;
+  pii_entity: boolean;
+  prompt_injection: boolean;
+  secrets_detection: boolean;
+  [x: string]: boolean;
+}
+
+export interface State {
   loading: boolean;
   systemPrompt: string;
   userPrompt: string;
@@ -27,214 +28,114 @@ export interface ChatContextProps {
   ];
   authzResponses: readonly PangeaResponse<unknown>[];
   documents: readonly DocumentInterface[];
-  detectors: Readonly<{
-    code_detection: boolean;
-    language_detection: boolean;
-    malicious_entity: boolean;
-    pii_entity: boolean;
-    prompt_injection: boolean;
-    secrets_detection: boolean;
-    [x: string]: boolean;
-  }>;
-  setLoading: (value: boolean) => void;
-  setSystemPrompt: (value: string) => void;
-  setUserPrompt: (value: string) => void;
-  setAuthzEnabled: (value: boolean) => void;
-  setSidePanelOpen: (value: boolean) => void;
-  setRightPanelOpen: (value: boolean) => void;
-  setAuditPanelOpen: (value: boolean) => void;
-  setLoginOpen: (value: boolean) => void;
-  setAiGuardResponses: (
-    value: readonly [PangeaResponse<unknown>, PangeaResponse<unknown>],
-  ) => void;
-  setAuthzResponses: (value: readonly PangeaResponse<unknown>[]) => void;
-  setDocuments: (value: readonly DocumentInterface[]) => void;
-  setDetectors: (
-    value: Readonly<{
-      code_detection: boolean;
-      language_detection: boolean;
-      malicious_entity: boolean;
-      pii_entity: boolean;
-      prompt_injection: boolean;
-      secrets_detection: boolean;
-    }>,
-  ) => void;
+  detectors: Readonly<Detectors>;
 }
 
-const ChatContext = createContext<ChatContextProps>({
-  loading: false,
-  systemPrompt: "",
-  userPrompt: "",
-  authzEnabled: false,
-  sidePanelOpen: true,
-  rightPanelOpen: false,
-  auditPanelOpen: false,
-  loginOpen: false,
-  aiGuardResponses: [{}, {}],
-  authzResponses: [],
-  documents: [],
-  detectors: {
-    code_detection: true,
-    language_detection: true,
-    malicious_entity: true,
-    pii_entity: true,
-    prompt_injection: true,
-    secrets_detection: true,
+const STORAGE_KEY = "app-state";
+
+let storedState: State | null = null;
+try {
+  storedState = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+} catch (_) {
+  // No-op.
+}
+
+export const store = new Store<State>(
+  storedState ?? {
+    loading: false,
+    systemPrompt: "",
+    userPrompt: "",
+    authzEnabled: false,
+    sidePanelOpen: true,
+    rightPanelOpen: false,
+    auditPanelOpen: false,
+    loginOpen: false,
+    aiGuardResponses: [{}, {}],
+    authzResponses: [],
+    documents: [],
+    detectors: {
+      code_detection: true,
+      language_detection: true,
+      malicious_entity: true,
+      pii_entity: true,
+      prompt_injection: true,
+      secrets_detection: true,
+    },
   },
-  setLoading: () => {},
-  setSystemPrompt: () => {},
-  setUserPrompt: () => {},
-  setAuthzEnabled: () => {},
-  setSidePanelOpen: () => {},
-  setRightPanelOpen: () => {},
-  setAuditPanelOpen: () => {},
-  setLoginOpen: () => {},
-  setAiGuardResponses: () => {},
-  setAuthzResponses: () => {},
-  setDocuments: () => {},
-  setDetectors: () => {},
+);
+
+store.subscribe(() => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(store.state));
 });
 
-export interface ChatProviderProps {
-  children?: ReactNode;
+export function useAppState() {
+  const aiGuardResponses = useStore(
+    store,
+    ({ aiGuardResponses }) => aiGuardResponses,
+  );
+  const auditPanelOpen = useStore(
+    store,
+    ({ auditPanelOpen }) => auditPanelOpen,
+  );
+  const authzEnabled = useStore(store, ({ authzEnabled }) => authzEnabled);
+  const authzResponses = useStore(
+    store,
+    ({ authzResponses }) => authzResponses,
+  );
+  const detectors = useStore(store, ({ detectors }) => detectors);
+  const documents = useStore(store, ({ documents }) => documents);
+  const loading = useStore(store, ({ loading }) => loading);
+  const loginOpen = useStore(store, ({ loginOpen }) => loginOpen);
+  const rightPanelOpen = useStore(
+    store,
+    ({ rightPanelOpen }) => rightPanelOpen,
+  );
+  const sidePanelOpen = useStore(store, ({ sidePanelOpen }) => sidePanelOpen);
+  const systemPrompt = useStore(store, ({ systemPrompt }) => systemPrompt);
+  const userPrompt = useStore(store, ({ userPrompt }) => userPrompt);
+
+  return {
+    aiGuardResponses,
+    auditPanelOpen,
+    authzEnabled,
+    authzResponses,
+    detectors,
+    documents,
+    loading,
+    loginOpen,
+    rightPanelOpen,
+    sidePanelOpen,
+    systemPrompt,
+    userPrompt,
+
+    // Actions.
+    setAiGuardResponses: (
+      aiGuardResponses: readonly [
+        Partial<PangeaResponse<unknown>>,
+        Partial<PangeaResponse<unknown>>,
+      ],
+    ) => store.setState((state) => ({ ...state, aiGuardResponses })),
+    setAuthzEnabled: (authzEnabled: boolean) =>
+      store.setState((state) => ({ ...state, authzEnabled })),
+    setAuthzResponses: (authzResponses: readonly PangeaResponse<unknown>[]) =>
+      store.setState((state) => ({ ...state, authzResponses })),
+    setAuditPanelOpen: (auditPanelOpen: boolean) =>
+      store.setState((state) => ({ ...state, auditPanelOpen })),
+    setDetectors: (detectors: Readonly<Detectors>) =>
+      store.setState((state) => ({ ...state, detectors })),
+    setDocuments: (documents: readonly DocumentInterface[]) =>
+      store.setState((state) => ({ ...state, documents })),
+    setLoading: (loading: boolean) =>
+      store.setState((state) => ({ ...state, loading })),
+    setLoginOpen: (loginOpen: boolean) =>
+      store.setState((state) => ({ ...state, loginOpen })),
+    setRightPanelOpen: (rightPanelOpen: boolean) =>
+      store.setState((state) => ({ ...state, rightPanelOpen })),
+    setSidePanelOpen: (sidePanelOpen: boolean) =>
+      store.setState((state) => ({ ...state, sidePanelOpen })),
+    setSystemPrompt: (systemPrompt: string) =>
+      store.setState((state) => ({ ...state, systemPrompt })),
+    setUserPrompt: (userPrompt: string) =>
+      store.setState((state) => ({ ...state, userPrompt })),
+  };
 }
-
-export interface ChatMessage {
-  hash: string;
-  type: string;
-  context?: unknown;
-  input?: string;
-  output?: string;
-  findings?: string;
-  malicious_count?: number;
-}
-
-const SYSTEM_PROMPT_KEY = "system_prompt";
-const USER_PROMPT_KEY = "user_prompt";
-
-export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
-  const mounted = useRef(false);
-
-  const [loading, setLoading] = useState(false);
-  const [systemPrompt, setSystemPrompt] = useState(
-    "You're a helpful assistant.",
-  );
-  const [userPrompt, setUserPrompt] = useState("");
-  const [authzEnabled, setAuthzEnabled] = useState(false);
-  const [sidePanelOpen, setSidePanelOpen] = useState(true);
-  const [rightPanelOpen, setRightPanelOpen] = useState(false);
-  const [auditPanelOpen, setAuditPanelOpen] = useState(false);
-  const [loginOpen, setLoginOpen] = useState(false);
-  const [aiGuardResponses, setAiGuardResponses] = useState<
-    readonly [
-      Partial<PangeaResponse<unknown>>,
-      Partial<PangeaResponse<unknown>>,
-    ]
-  >([{}, {}]);
-  const [authzResponses, setAuthzResponses] = useState<
-    readonly PangeaResponse<unknown>[]
-  >([]);
-  const [documents, setDocuments] = useState<readonly DocumentInterface[]>([]);
-  const [detectors, setDetectors] = useState<
-    Readonly<{
-      code_detection: boolean;
-      language_detection: boolean;
-      malicious_entity: boolean;
-      pii_entity: boolean;
-      prompt_injection: boolean;
-      secrets_detection: boolean;
-    }>
-  >({
-    code_detection: true,
-    language_detection: true,
-    malicious_entity: true,
-    pii_entity: true,
-    prompt_injection: true,
-    secrets_detection: true,
-  });
-
-  useEffect(() => {
-    if (!mounted.current) {
-      mounted.current = true;
-
-      const storedSystemPrompt = localStorage.getItem(SYSTEM_PROMPT_KEY);
-      const storedUserPrompt = localStorage.getItem(USER_PROMPT_KEY);
-
-      if (storedSystemPrompt) {
-        setSystemPrompt(storedSystemPrompt);
-      }
-      if (storedUserPrompt) {
-        setUserPrompt(storedUserPrompt);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem(SYSTEM_PROMPT_KEY, systemPrompt);
-  }, [systemPrompt]);
-
-  useEffect(() => {
-    localStorage.setItem(USER_PROMPT_KEY, userPrompt);
-  }, [userPrompt]);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: TODO
-  const memoData = useMemo(
-    () => ({
-      loading,
-      systemPrompt,
-      userPrompt,
-      authzEnabled,
-      sidePanelOpen,
-      rightPanelOpen,
-      auditPanelOpen,
-      loginOpen,
-      aiGuardResponses,
-      authzResponses,
-      documents,
-      detectors,
-      setLoading,
-      setSystemPrompt,
-      setUserPrompt,
-      setAuthzEnabled,
-      setSidePanelOpen,
-      setRightPanelOpen,
-      setAuditPanelOpen,
-      setLoginOpen,
-      setAiGuardResponses,
-      setAuthzResponses,
-      setDocuments,
-      setDetectors,
-    }),
-    [
-      loading,
-      systemPrompt,
-      userPrompt,
-      authzEnabled,
-      sidePanelOpen,
-      rightPanelOpen,
-      auditPanelOpen,
-      loginOpen,
-      aiGuardResponses,
-      authzResponses,
-      documents,
-      detectors,
-      setLoading,
-      setSystemPrompt,
-      setUserPrompt,
-      setAuthzEnabled,
-      setSidePanelOpen,
-      setRightPanelOpen,
-      setAuditPanelOpen,
-      setLoginOpen,
-      setDetectors,
-    ],
-  );
-
-  return (
-    <ChatContext.Provider value={memoData}>{children}</ChatContext.Provider>
-  );
-};
-
-export const useChatContext = () => {
-  return useContext(ChatContext);
-};

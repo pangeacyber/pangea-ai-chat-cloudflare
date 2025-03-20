@@ -2,8 +2,9 @@ import { CircularProgress, Stack } from "@mui/material";
 import { useAuth } from "@pangeacyber/react-auth";
 import { type FC, useCallback, useMemo } from "react";
 
-import { type ChatMessage, useChatContext } from "@src/app/context";
+import { useAppState } from "@src/app/context";
 import { Colors } from "@src/app/theme";
+import type { ChatMessage } from "@src/types";
 
 import {
   AiGuardMessage,
@@ -17,7 +18,7 @@ interface Props {
 
 const ChatScroller: FC<Props> = ({ messages }) => {
   const { user } = useAuth();
-  const { loading, auditPanelOpen } = useChatContext();
+  const { loading, auditPanelOpen } = useAppState();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: scroll to the bottom whenever new messages appear
   const scroller = useCallback(
