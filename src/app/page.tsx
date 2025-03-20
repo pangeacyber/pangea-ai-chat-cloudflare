@@ -24,7 +24,7 @@ export default function Home() {
       loginUrl={env.NEXT_PUBLIC_AUTHN_UI_URL}
       useStrictStateCheck={false}
     >
-      <ThemeProvider theme={PangeaDark}>
+      <ThemeProvider theme={PangeaDark()}>
         <CssBaseline />
         <ChatProvider>
           <Layout />

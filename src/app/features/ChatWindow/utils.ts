@@ -1,48 +1,45 @@
+import type { MessageFieldWithRole } from "@langchain/core/messages";
 import type { Audit } from "pangea-node-sdk";
 
 import {
   aiProxyRequest,
   auditProxyRequest,
   dataGuardProxyRequest,
-  promptGuardProxyRequest,
+  docsProxyRequest,
+  unredactProxyRequest,
 } from "@src/app/proxy";
+import type { DetectorOverrides } from "@src/types";
 
-export const sendUserMessage = async (
+export const fetchDocuments = async (
   token: string,
-  message: string,
-  system: string,
+  userPrompt: string,
   authz = false,
 ) => {
+  return await docsProxyRequest(token, { userPrompt, authz });
+};
+
+export const generateCompletions = async (
+  token: string,
+  messages: MessageFieldWithRole[],
+  systemPrompt: string,
+  userPrompt: string,
+) => {
   return await aiProxyRequest(token, {
-    authz,
-    userPrompt: message,
-    systemPrompt: system,
+    input: messages,
+    systemPrompt,
+    userPrompt,
   });
 };
 
-export const callPromptGuard = async (
+export const callInputDataGuard = async (
   token: string,
-  userPrompt: string,
-  systemPrompt: string,
+  messages: readonly MessageFieldWithRole[],
+  overrides?: DetectorOverrides,
 ) => {
-  const messages = [
-    {
-      content: userPrompt,
-      role: "user",
-    },
-  ];
-
-  if (systemPrompt) {
-    messages.push({ content: systemPrompt, role: "system" });
-  }
-
-  return await promptGuardProxyRequest(token, { messages });
-};
-
-export const callInputDataGuard = async (token: string, userPrompt: string) => {
   const payload = {
-    recipe: "pangea_prompt_guard",
-    text: userPrompt,
+    recipe: "pangea_llm_prompt_guard",
+    messages,
+    overrides,
   };
 
   return await dataGuardProxyRequest(token, payload);
@@ -51,13 +48,28 @@ export const callInputDataGuard = async (token: string, userPrompt: string) => {
 export const callResponseDataGuard = async (
   token: string,
   llmResponse: string,
+  overrides?: DetectorOverrides,
 ) => {
   const payload = {
     recipe: "pangea_llm_response_guard",
     text: llmResponse,
+    overrides,
   };
 
   return await dataGuardProxyRequest(token, payload);
+};
+
+export const unredact = async (
+  token: string,
+  redacted: string,
+  fpe_context: string,
+) => {
+  const payload = {
+    redacted_data: redacted,
+    fpe_context,
+  };
+
+  return await unredactProxyRequest(token, payload);
 };
 
 export const auditUserPrompt = async (token: string, data: unknown) => {

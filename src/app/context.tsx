@@ -16,67 +16,83 @@ export interface ChatContextProps {
   loading: boolean;
   systemPrompt: string;
   userPrompt: string;
-  promptGuardEnabled: boolean;
-  dataGuardEnabled: boolean;
   authzEnabled: boolean;
   sidePanelOpen: boolean;
   rightPanelOpen: boolean;
   auditPanelOpen: boolean;
   loginOpen: boolean;
-  promptGuardResponse: Partial<PangeaResponse<unknown>>;
   aiGuardResponses: readonly [
     Partial<PangeaResponse<unknown>>,
     Partial<PangeaResponse<unknown>>,
   ];
   authzResponses: readonly PangeaResponse<unknown>[];
   documents: readonly DocumentInterface[];
+  detectors: Readonly<{
+    code_detection: boolean;
+    language_detection: boolean;
+    malicious_entity: boolean;
+    pii_entity: boolean;
+    prompt_injection: boolean;
+    secrets_detection: boolean;
+    [x: string]: boolean;
+  }>;
   setLoading: (value: boolean) => void;
   setSystemPrompt: (value: string) => void;
   setUserPrompt: (value: string) => void;
-  setPromptGuardEnabled: (value: boolean) => void;
-  setDataGuardEnabled: (value: boolean) => void;
   setAuthzEnabled: (value: boolean) => void;
   setSidePanelOpen: (value: boolean) => void;
   setRightPanelOpen: (value: boolean) => void;
   setAuditPanelOpen: (value: boolean) => void;
   setLoginOpen: (value: boolean) => void;
-  setPromptGuardResponse: (value: PangeaResponse<unknown>) => void;
   setAiGuardResponses: (
     value: readonly [PangeaResponse<unknown>, PangeaResponse<unknown>],
   ) => void;
   setAuthzResponses: (value: readonly PangeaResponse<unknown>[]) => void;
   setDocuments: (value: readonly DocumentInterface[]) => void;
+  setDetectors: (
+    value: Readonly<{
+      code_detection: boolean;
+      language_detection: boolean;
+      malicious_entity: boolean;
+      pii_entity: boolean;
+      prompt_injection: boolean;
+      secrets_detection: boolean;
+    }>,
+  ) => void;
 }
 
 const ChatContext = createContext<ChatContextProps>({
   loading: false,
   systemPrompt: "",
   userPrompt: "",
-  promptGuardEnabled: true,
-  dataGuardEnabled: true,
   authzEnabled: false,
   sidePanelOpen: true,
   rightPanelOpen: false,
   auditPanelOpen: false,
   loginOpen: false,
-  promptGuardResponse: {},
   aiGuardResponses: [{}, {}],
   authzResponses: [],
   documents: [],
+  detectors: {
+    code_detection: true,
+    language_detection: true,
+    malicious_entity: true,
+    pii_entity: true,
+    prompt_injection: true,
+    secrets_detection: true,
+  },
   setLoading: () => {},
   setSystemPrompt: () => {},
   setUserPrompt: () => {},
-  setPromptGuardEnabled: () => {},
-  setDataGuardEnabled: () => {},
   setAuthzEnabled: () => {},
   setSidePanelOpen: () => {},
-  setAuditPanelOpen: () => {},
   setRightPanelOpen: () => {},
+  setAuditPanelOpen: () => {},
   setLoginOpen: () => {},
-  setPromptGuardResponse: () => {},
   setAiGuardResponses: () => {},
   setAuthzResponses: () => {},
   setDocuments: () => {},
+  setDetectors: () => {},
 });
 
 export interface ChatProviderProps {
@@ -104,14 +120,11 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
     "You're a helpful assistant.",
   );
   const [userPrompt, setUserPrompt] = useState("");
-  const [promptGuardEnabled, setPromptGuardEnabled] = useState(true);
-  const [dataGuardEnabled, setDataGuardEnabled] = useState(true);
   const [authzEnabled, setAuthzEnabled] = useState(false);
   const [sidePanelOpen, setSidePanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
   const [auditPanelOpen, setAuditPanelOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
-  const [promptGuardResponse, setPromptGuardResponse] = useState({});
   const [aiGuardResponses, setAiGuardResponses] = useState<
     readonly [
       Partial<PangeaResponse<unknown>>,
@@ -122,6 +135,23 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
     readonly PangeaResponse<unknown>[]
   >([]);
   const [documents, setDocuments] = useState<readonly DocumentInterface[]>([]);
+  const [detectors, setDetectors] = useState<
+    Readonly<{
+      code_detection: boolean;
+      language_detection: boolean;
+      malicious_entity: boolean;
+      pii_entity: boolean;
+      prompt_injection: boolean;
+      secrets_detection: boolean;
+    }>
+  >({
+    code_detection: true,
+    language_detection: true,
+    malicious_entity: true,
+    pii_entity: true,
+    prompt_injection: true,
+    secrets_detection: true,
+  });
 
   useEffect(() => {
     if (!mounted.current) {
@@ -153,57 +183,50 @@ export const ChatProvider: FC<ChatProviderProps> = ({ children }) => {
       loading,
       systemPrompt,
       userPrompt,
-      promptGuardEnabled,
-      dataGuardEnabled,
       authzEnabled,
       sidePanelOpen,
       rightPanelOpen,
       auditPanelOpen,
       loginOpen,
-      promptGuardResponse,
       aiGuardResponses,
       authzResponses,
       documents,
+      detectors,
       setLoading,
       setSystemPrompt,
       setUserPrompt,
-      setPromptGuardEnabled,
-      setDataGuardEnabled,
       setAuthzEnabled,
       setSidePanelOpen,
       setRightPanelOpen,
       setAuditPanelOpen,
       setLoginOpen,
-      setPromptGuardResponse,
       setAiGuardResponses,
       setAuthzResponses,
       setDocuments,
+      setDetectors,
     }),
     [
       loading,
       systemPrompt,
       userPrompt,
-      promptGuardEnabled,
-      dataGuardEnabled,
       authzEnabled,
       sidePanelOpen,
       rightPanelOpen,
       auditPanelOpen,
       loginOpen,
-      promptGuardResponse,
       aiGuardResponses,
       authzResponses,
       documents,
+      detectors,
       setLoading,
       setSystemPrompt,
       setUserPrompt,
-      setPromptGuardEnabled,
-      setDataGuardEnabled,
       setAuthzEnabled,
       setSidePanelOpen,
       setRightPanelOpen,
       setAuditPanelOpen,
       setLoginOpen,
+      setDetectors,
     ],
   );
 

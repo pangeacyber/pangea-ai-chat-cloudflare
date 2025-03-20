@@ -1,3 +1,5 @@
+import type { DocumentInterface } from "@langchain/core/documents";
+import RestartAlt from "@mui/icons-material/RestartAlt";
 import SendIcon from "@mui/icons-material/Send";
 import {
   Alert,
@@ -12,12 +14,11 @@ import {
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { useAuth } from "@pangeacyber/react-auth";
+import { type AuthUser, useAuth } from "@pangeacyber/react-auth";
 import type { AIGuard } from "pangea-node-sdk";
 import {
   type ChangeEvent,
   type KeyboardEvent,
-  useCallback,
   useEffect,
   useRef,
   useState,
@@ -26,17 +27,22 @@ import {
 import { type ChatMessage, useChatContext } from "@src/app/context";
 import { Colors } from "@src/app/theme";
 import { DAILY_MAX_MESSAGES, PROMPT_MAX_CHARS } from "@src/const";
-import type { AIGuardResult, PangeaResponse } from "@src/types";
-import { rateLimitQuery } from "@src/utils";
+import type {
+  AIGuardResult,
+  DetectorOverrides,
+  PangeaResponse,
+} from "@src/types";
+import { constructLlmInput, rateLimitQuery } from "@src/utils";
 
 import ChatScroller from "./components/ChatScroller";
 import {
   auditSearch,
   auditUserPrompt,
   callInputDataGuard,
-  callPromptGuard,
   callResponseDataGuard,
-  sendUserMessage,
+  fetchDocuments,
+  generateCompletions,
+  unredact,
 } from "./utils";
 
 function hashCode(str: string) {
@@ -48,19 +54,23 @@ function hashCode(str: string) {
   return (hash >>> 0).toString(36).padStart(7, "0") + Date.now();
 }
 
+/** Returns whether or not the given user is a Pangean. */
+function isPangean(user: AuthUser): boolean {
+  // Email is assumed to have been verified by the social auth provider.
+  return user.email.endsWith("@pangea.cloud");
+}
+
 const ChatWindow = () => {
   const theme = useTheme();
   const {
     loading,
-    promptGuardEnabled,
-    dataGuardEnabled,
     authzEnabled,
     systemPrompt,
     userPrompt,
+    detectors,
     setUserPrompt,
     setLoading,
     setLoginOpen,
-    setPromptGuardResponse,
     setAiGuardResponses,
     setAuthzResponses,
     setDocuments,
@@ -74,21 +84,18 @@ const ChatWindow = () => {
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>();
 
-  const processingError = useCallback(
-    (msg: string, status = 0) => {
-      if (status && status === 403) {
-        setError("Session expired, please log in again");
-        setProcessing("");
-        logout();
-        setLoginOpen(true);
-      } else {
-        setError(msg);
-        setProcessing("");
-        setOpen(true);
-      }
-    },
-    [logout, setLoginOpen],
-  );
+  const processingError = (msg: string, status = 0) => {
+    if (status && status === 403) {
+      setError("Session expired, please log in again");
+      setProcessing("");
+      logout();
+      setLoginOpen(true);
+    } else {
+      setError(msg);
+      setProcessing("");
+      setOpen(true);
+    }
+  };
 
   const handleSubmit = async () => {
     // require authentication
@@ -131,61 +138,68 @@ const ChatWindow = () => {
       return;
     }
 
-    if (promptGuardEnabled) {
-      setProcessing("Checking user prompt with Prompt Guard");
-
-      try {
-        const promptResp = await callPromptGuard(token, userPrompt, "");
-        setPromptGuardResponse(promptResp);
-        const pgMsg: ChatMessage = {
-          hash: hashCode(JSON.stringify(promptResp)),
-          type: "prompt_guard",
-          output: JSON.stringify(promptResp?.result),
-        };
-        setMessages((prevMessages) => [...prevMessages, pgMsg]);
-
-        // don't send to the llm if prompt is malicious
-        if (promptResp.result.detected) {
-          processingError("Processing halted: suspicious prompt");
-          return;
-        }
-      } catch (err) {
-        const status = err instanceof Response ? err.status : 0;
-        processingError("Prompt Guard call failed, please try again", status);
-        return;
-      }
+    setProcessing("Fetching documents");
+    let docs: DocumentInterface[] = [];
+    try {
+      const docsResponse = await fetchDocuments(
+        token,
+        userPrompt,
+        authzEnabled,
+      );
+      docs = docsResponse.documents;
+      setAuthzResponses(docsResponse.authzResponses);
+      setDocuments(docs);
+    } catch (_) {
+      setAuthzResponses([]);
+      setDocuments([]);
     }
 
-    let llmUserPrompt = userPrompt;
+    let llmInput = constructLlmInput({
+      systemPrompt,
+      userPrompt,
+      documents: docs,
+      profile: user!.profile,
+    });
+    const overrides: DetectorOverrides = {
+      code_detection: { disabled: !detectors.code_detection },
+      language_detection: { disabled: !detectors.language_detection },
+      malicious_entity: { disabled: !detectors.malicious_entity },
+      pii_entity: { disabled: !detectors.pii_entity },
+      prompt_injection: { disabled: !detectors.prompt_injection },
+      secrets_detection: { disabled: !detectors.secrets_detection },
+    };
     let guardedInput: PangeaResponse<AIGuardResult>;
 
-    if (dataGuardEnabled) {
-      setProcessing("Checking user prompt with AI Guard");
+    setProcessing("Checking user prompt with AI Guard");
 
-      try {
-        guardedInput = await callInputDataGuard(token, userPrompt);
-        setAiGuardResponses([
-          guardedInput,
-          {} as PangeaResponse<AIGuard.TextGuardResult<unknown>>,
-        ]);
-        const dgiMsg: ChatMessage = {
-          hash: hashCode(JSON.stringify(guardedInput)),
-          type: "ai_guard",
-          findings: JSON.stringify(guardedInput.result.detectors),
-        };
-        setMessages((prevMessages) => [...prevMessages, dgiMsg]);
+    try {
+      guardedInput = await callInputDataGuard(token, llmInput, overrides);
+      setAiGuardResponses([
+        guardedInput,
+        {} as PangeaResponse<AIGuard.TextGuardResult<never>>,
+      ]);
+      const dgiMsg: ChatMessage = {
+        hash: hashCode(JSON.stringify(guardedInput)),
+        type: "ai_guard",
+        findings: JSON.stringify(guardedInput.result.detectors),
+      };
+      setMessages((prevMessages) => [...prevMessages, dgiMsg]);
 
-        llmUserPrompt = guardedInput.result.prompt_text!;
-      } catch (err) {
-        const status = err instanceof Response ? err.status : 0;
-        processingError("AI Guard call failed, please try again", status);
+      llmInput = guardedInput.result.prompt_messages;
+
+      // Halt early if any enabled detector detected something.
+      if (
+        (detectors.prompt_injection &&
+          guardedInput.result.detectors.prompt_injection.detected) ||
+        (detectors.malicious_entity &&
+          guardedInput.result.detectors.malicious_entity?.detected)
+      ) {
+        processingError("Processing halted: suspicious prompt");
         return;
       }
-    }
-
-    // don't send empty prompt
-    if (!llmUserPrompt) {
-      processingError("Processing halted: suspicious prompt");
+    } catch (err) {
+      const status = err instanceof Response ? err.status : 0;
+      processingError("AI Guard call failed, please try again", status);
       return;
     }
 
@@ -195,42 +209,54 @@ const ChatWindow = () => {
     let llmResponse = "";
 
     try {
-      const llmResponseObj = await sendUserMessage(
+      const llmResponseObj = await generateCompletions(
         token,
-        llmUserPrompt,
+        llmInput,
         systemPrompt,
-        authzEnabled,
+        userPrompt,
       );
       llmResponse = llmResponseObj.content;
-      setAuthzResponses(llmResponseObj.authzResponses);
-      setDocuments(llmResponseObj.documents);
 
-      // decrement daily remaining count
-      setRemaining((curVal) => curVal - 1);
+      // Decrement daily remaining count if not a Pangean.
+      if (user && !isPangean(user)) {
+        setRemaining((curVal) => curVal - 1);
+      }
     } catch (err) {
       const status = err instanceof Response ? err.status : 0;
       processingError("LLM call failed, please try again", status);
       return;
     }
 
-    if (dataGuardEnabled) {
-      setProcessing("Checking LLM response with AI Guard");
+    setProcessing("Checking LLM response with AI Guard");
 
-      try {
-        const dataResp = await callResponseDataGuard(token, llmResponse);
-        setAiGuardResponses([guardedInput!, dataResp]);
-        const dgrMsg: ChatMessage = {
-          hash: hashCode(JSON.stringify(dataResp)),
-          type: "ai_guard",
-          findings: JSON.stringify(dataResp.result.detectors),
-        };
-        dataGuardMessages.push(dgrMsg);
+    try {
+      const dataResp = await callResponseDataGuard(
+        token,
+        llmResponse,
+        overrides,
+      );
+      setAiGuardResponses([guardedInput!, dataResp]);
+      const dgrMsg: ChatMessage = {
+        hash: hashCode(JSON.stringify(dataResp)),
+        type: "ai_guard",
+        findings: JSON.stringify(dataResp.result.detectors),
+      };
+      dataGuardMessages.push(dgrMsg);
 
-        llmResponse = dataResp.result.prompt_text!;
-      } catch (err) {
-        const status = err instanceof Response ? err.status : 0;
-        processingError("AI Guard call failed, please try again", status);
-      }
+      llmResponse = dataResp.result.prompt_text;
+    } catch (err) {
+      const status = err instanceof Response ? err.status : 0;
+      processingError("AI Guard call failed, please try again", status);
+    }
+
+    // Unredact if a FPE context was returned.
+    if (guardedInput.result.fpe_context) {
+      const unredacted = await unredact(
+        token,
+        llmResponse,
+        guardedInput.result.fpe_context,
+      );
+      llmResponse = unredacted.result.data;
     }
 
     const llmMsg: ChatMessage = {
@@ -288,19 +314,21 @@ const ChatWindow = () => {
       if (token) {
         setLoading(true);
 
-        // Get LLM responses for the last 24-hours
-        const limitSearch = rateLimitQuery();
-        limitSearch.search_restriction = { actor: [user?.username] };
-        const searchResp = await auditSearch(token, limitSearch).catch(
-          (err) => {
-            const status = err instanceof Response ? err.status : 0;
-            processingError("", status);
-            setLoading(false);
-            throw err;
-          },
-        );
-        const count = searchResp?.count || 0;
-        setRemaining(DAILY_MAX_MESSAGES - count);
+        // Rate limit for non-Pangeans.
+        if (user && !isPangean(user)) {
+          const limitSearch = rateLimitQuery();
+          limitSearch.search_restriction = { actor: [user?.username] };
+          const searchResp = await auditSearch(token, limitSearch).catch(
+            (err) => {
+              const status = err instanceof Response ? err.status : 0;
+              processingError("", status);
+              setLoading(false);
+              throw err;
+            },
+          );
+          const count = searchResp?.count || 0;
+          setRemaining(DAILY_MAX_MESSAGES - count);
+        }
 
         // Load Chat history from audit log
         const response = await auditSearch(token, { limit: 50 });
@@ -340,7 +368,26 @@ const ChatWindow = () => {
   return (
     <Stack width="100%" height="100%">
       <Paper sx={{ height: "100%" }}>
-        <Stack height="100%" alignItems="center" justifyContent="space-between">
+        <Stack
+          height="100%"
+          alignItems="center"
+          justifyContent="space-between"
+          position="relative"
+        >
+          <IconButton
+            aria-label="clear"
+            title="Clear chat"
+            onClick={() => setMessages([])}
+            size="small"
+            disableRipple
+            sx={{
+              position: "absolute",
+              top: "0.35em",
+              right: "0.45em",
+            }}
+          >
+            <RestartAlt />
+          </IconButton>
           <Typography
             variant="h1"
             sx={{
@@ -448,10 +495,12 @@ const ChatWindow = () => {
             justifyContent="center"
             mb="12px"
           >
-            {!loading && authenticated && (
+            {!loading && authenticated && user && !isPangean(user) && (
               <Typography
                 variant="body2"
-                sx={{ fontSize: "12px", lineHeight: "20px", height: "20px" }}
+                fontSize="12px"
+                lineHeight="20px"
+                height="20px"
               >
                 Message count: {remaining} remaining | You can send{" "}
                 {DAILY_MAX_MESSAGES} messages a day
