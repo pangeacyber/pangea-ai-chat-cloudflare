@@ -2,8 +2,8 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>pangeacyber/.github:renovate-config",
+    ":automergeMinor",
     ":semanticCommitsDisabled"
   ],
-  "automerge": true,
   "automergeStrategy": "rebase"
 }
