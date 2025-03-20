@@ -56,8 +56,7 @@ const SampleCode: FC = () => {
 };
 
 const ResponsesSidePanel: FC<Props> = ({ onClose }) => {
-  const { promptGuardResponse, aiGuardResponses, authzResponses, documents } =
-    useChatContext();
+  const { aiGuardResponses, authzResponses, documents } = useChatContext();
 
   return (
     <Stack
@@ -73,12 +72,6 @@ const ResponsesSidePanel: FC<Props> = ({ onClose }) => {
             <ViewSidebarOutlinedIcon sx={{ color: Colors.icons }} />
           </IconButton>
         </PanelHeader>
-
-        <CollapsablePanel title="Prompt Guard">
-          <Stack gap={1} py={1} fontFamily="monospace">
-            <JsonView data={promptGuardResponse} style={reactJsonViewStyles} />
-          </Stack>
-        </CollapsablePanel>
 
         <CollapsablePanel title="AI Guard">
           <Stack gap={1} py={1} fontFamily="monospace">

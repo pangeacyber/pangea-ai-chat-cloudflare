@@ -19,12 +19,12 @@ export const Colors = {
   borders: "#797C7F",
   card: "#16181A",
   jsonView: {
-    container: "rgb(51, 53, 55)",
-    label: "rgb(248, 194, 102)",
-    stringValue: "rgb(255, 255, 255)",
+    container: "#333537",
+    label: "#F8C266",
+    stringValue: "#FFFFFF",
   },
   shiki: {
-    background: "rgb(51, 53, 55)",
+    background: "#333537",
   },
 };
 
@@ -100,13 +100,8 @@ const PangeaDark = () => {
               {
                 props: { variant: "outlined" },
                 style: {
-                  color: Colors.borders,
-                  borderColor: Colors.borders,
-                  "&:hover": {
-                    color: Colors.icons,
-                    borderColor: Colors.icons,
-                    background: "transparent",
-                  },
+                  color: Colors.contrast,
+                  borderColor: Colors.contrast,
                 },
               },
               {
@@ -141,37 +136,6 @@ const PangeaDark = () => {
           },
         },
       },
-
-      MuiSwitch: {
-        styleOverrides: {
-          root: {
-            width: "60px",
-            alignItems: "center",
-            ".MuiButtonBase-root": {
-              transform: "translateX(6px)",
-              "&.Mui-checked": {
-                transform: "translateX(20px)",
-              },
-            },
-            ".MuiSwitch-thumb": {
-              marginTop: "2px",
-              height: "16px",
-              width: "16px",
-              color: Colors.contrast,
-            },
-            ".MuiSwitch-track": {
-              height: "20px",
-              borderRadius: "10px",
-              opacity: "1!important",
-              background: Colors.background.paper,
-              border: `1px solid ${Colors.icons}`,
-            },
-            ".Mui-checked + .MuiSwitch-track": {
-              border: `1px solid ${Colors.secondary}`,
-            },
-          },
-        },
-      },
       MuiSvgIcon: {
         styleOverrides: {
           root: {
@@ -184,6 +148,14 @@ const PangeaDark = () => {
                 },
               },
             ],
+          },
+        },
+      },
+      MuiTooltip: {
+        styleOverrides: {
+          tooltip: {
+            backgroundColor: "#222630",
+            border: `1px solid ${Colors.borders}`,
           },
         },
       },

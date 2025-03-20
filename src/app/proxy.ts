@@ -1,7 +1,19 @@
 import type { DocumentInterface } from "@langchain/core/documents";
-import type { AuthZ, PromptGuard } from "pangea-node-sdk";
+import type { AuthZ } from "pangea-node-sdk";
 
-import type { AIGuardResult, PangeaResponse } from "@src/types";
+import type { RequestBody as DocsRequestBody } from "@src/app/api/docs/route";
+import type { RequestBody as UnredactRequestBody } from "@src/app/api/unredact/route";
+import type { AIGuardResult, PangeaResponse, UnredactResult } from "@src/types";
+
+export const docsProxyRequest = async (
+  token: string,
+  body: DocsRequestBody,
+): Promise<{
+  authzResponses: PangeaResponse<AuthZ.CheckResult>[];
+  documents: DocumentInterface[];
+}> => {
+  return await baseProxyRequest(token, "docs", "", body);
+};
 
 export const dataGuardProxyRequest = async (
   token: string,
@@ -10,11 +22,11 @@ export const dataGuardProxyRequest = async (
   return await baseProxyRequest(token, "data", "", body);
 };
 
-export const promptGuardProxyRequest = async (
+export const unredactProxyRequest = async (
   token: string,
-  body: unknown,
-): Promise<PangeaResponse<PromptGuard.GuardResult>> => {
-  return await baseProxyRequest(token, "prompt", "", body);
+  body: UnredactRequestBody,
+): Promise<PangeaResponse<UnredactResult>> => {
+  return await baseProxyRequest(token, "unredact", "", body);
 };
 
 export const auditProxyRequest = async <T>(
