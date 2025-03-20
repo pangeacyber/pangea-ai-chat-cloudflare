@@ -2,7 +2,7 @@ import type { MessageFieldWithRole } from "@langchain/core/messages";
 
 export interface ChatMessage {
   hash: string;
-  type: string;
+  type: "ai_guard" | "llm_response" | "user_prompt";
   context?: unknown;
   input?: string;
   output?: string;

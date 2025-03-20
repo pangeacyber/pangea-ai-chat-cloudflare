@@ -59,6 +59,19 @@ export async function auditLogRequest(data: {
   }
 }
 
+export async function auditLogBulk(
+  events: readonly Record<string, string | number | Date>[],
+) {
+  const url = getUrl("audit", "v2/log");
+  const { success, response } = await postRequest<{ errors: unknown[] }>(url, {
+    config_id: process.env.PANGEA_AUDIT_CONFIG_ID,
+    events: events.map((event) => ({ event })),
+  });
+  if (!success) {
+    console.warn("Failed to log events.", response.result.errors);
+  }
+}
+
 export async function auditSearchRequest(data: object) {
   const url = getUrl("audit", "v1/search");
 
