@@ -5,5 +5,12 @@
     ":automergeMinor",
     ":semanticCommitsDisabled"
   ],
-  "automergeStrategy": "rebase"
+  "automergeStrategy": "rebase",
+  "packageRules": [
+    {
+      "description": "cloudflare/next-on-pages has poor Next.js v15 support.",
+      "matchDepNames": ["next"],
+      "enabled": false
+    }
+  ]
 }
