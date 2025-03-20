@@ -44,8 +44,6 @@ export async function POST(request: NextRequest) {
         recipe: body.recipe,
       }),
       findings: JSON.stringify(response.result.detectors),
-      malicious_entity_count:
-        response.result.detectors.malicious_entity?.data?.entities?.length || 0,
       actor: username,
     },
   };
