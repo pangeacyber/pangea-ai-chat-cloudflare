@@ -342,7 +342,6 @@ const ChatWindow = () => {
             input: event.envelope.event.input,
             output: event.envelope.event.output,
             findings: event.envelope.event.findings,
-            malicious_count: event.envelope.event.malicious_entity_count,
           };
           return message;
         });
