@@ -7,7 +7,7 @@ An example webapp on Cloudflare demonstrating Pangea's [AI Guard][] and
 
 ## Prerequisites
 
-- Node.js v22.
+- Node.js v20.19.0, v22.14.0, or greater.
 - A [Pangea account][Pangea signup] with AI Guard, Prompt Guard, AuthN, AuthZ,
   and Secure Audit Log enabled.
 - A Cloudflare account.

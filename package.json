@@ -3,6 +3,9 @@
   "version": "0.0.0-development",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "browserslist": ["last 1 Firefox version", "last 1 Chrome version"],
   "scripts": {
     "dev": "next dev --turbo",
