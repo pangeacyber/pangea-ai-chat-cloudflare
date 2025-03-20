@@ -6,11 +6,8 @@ import type { NextRequest } from "next/server";
 
 import { DAILY_MAX_MESSAGES, PROMPT_MAX_CHARS } from "@src/const";
 import { rateLimitQuery } from "@src/utils";
-import {
-  auditLogRequest,
-  auditSearchRequest,
-  validateToken,
-} from "../requests";
+import { PangeaAuditCallbackHandler } from "../audit-langchain-tracer";
+import { auditSearchRequest, validateToken } from "../requests";
 
 declare global {
   interface CloudflareEnv {
@@ -26,6 +23,14 @@ const llm = new ChatCloudflareWorkersAI({
   model: "@cf/meta/llama-3.2-3b-instruct",
 });
 const chain = llm.pipe(new StringOutputParser());
+
+function getIpAddress(req: NextRequest): string | null {
+  return (
+    req.headers.get("x-forwarded-for") ??
+    req.headers.get("cf-connecting-ip") ??
+    req.headers.get("x-real-ip")
+  );
+}
 
 interface RequestBody {
   input: MessageFieldWithRole[];
@@ -68,21 +73,13 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const text = await chain.invoke(body.input);
-
-  const auditLogData = {
-    event: {
-      input: body.userPrompt,
-      output: text,
-      type: "llm_response",
-      context: JSON.stringify({
-        system_prompt: systemPrompt,
-      }),
-      actor: username,
+  const text = await chain.invoke(body.input, {
+    callbacks: [new PangeaAuditCallbackHandler()],
+    metadata: {
+      authn_info: username,
+      source: getIpAddress(request) ?? "",
     },
-  };
-
-  await auditLogRequest(auditLogData);
+  });
 
   return Response.json({ content: text });
 }

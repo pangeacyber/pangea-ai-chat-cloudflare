@@ -48,7 +48,6 @@ const ChatScroller: FC<Props> = ({ messages }) => {
                   key={`message-${message.hash}`}
                 />
               );
-            case "data_guard":
             case "ai_guard":
               return (
                 <AiGuardMessage

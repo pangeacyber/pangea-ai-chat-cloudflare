@@ -10,7 +10,7 @@ export const rateLimitQuery = () => {
   const today = "24hour";
 
   const limitSearch = {
-    query: "type:llm_response",
+    query: "type:llm/end",
     limit: 1,
     start: today,
     search_restriction: {},

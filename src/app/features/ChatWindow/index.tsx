@@ -340,7 +340,10 @@ const ChatWindow = () => {
         const messages_: ChatMessage[] = response.events.map((event: any) => {
           const message: ChatMessage = {
             hash: event.hash,
-            type: event.envelope.event.type,
+            type:
+              event.envelope.event.type === "llm/end"
+                ? "llm_response"
+                : event.envelope.event.type,
             context: event.envelope.event.context,
             input: event.envelope.event.input,
             output: event.envelope.event.output,
