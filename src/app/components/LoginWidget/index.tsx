@@ -2,7 +2,7 @@ import { Avatar, Button, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useAuth } from "@pangeacyber/react-auth";
 
-import { useChatContext } from "@src/app/context";
+import { useAppState } from "@src/app/context";
 
 const LoginContainer = styled(Stack)(({ theme }) => ({
   marginLeft: "20px",
@@ -15,7 +15,7 @@ const LoginContainer = styled(Stack)(({ theme }) => ({
 
 const LoginWidget = () => {
   const { authenticated, user, login, logout } = useAuth();
-  const { setUserPrompt, setSystemPrompt } = useChatContext();
+  const { setUserPrompt, setSystemPrompt } = useAppState();
   const firstLetter = Array.from(
     user?.profile?.first_name || user?.email || " ",
   )[0];

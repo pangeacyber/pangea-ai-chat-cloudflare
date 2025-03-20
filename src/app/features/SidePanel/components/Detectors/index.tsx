@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import type { ReactElement, ReactNode } from "react";
 
-import { useChatContext } from "@src/app/context";
+import { useAppState } from "@src/app/context";
 
 interface Detector {
   key: string;
@@ -110,7 +110,7 @@ const InfoTooltip = ({
 );
 
 const Detectors = () => {
-  const { detectors, setDetectors } = useChatContext();
+  const { detectors, setDetectors } = useAppState();
 
   return (
     <>

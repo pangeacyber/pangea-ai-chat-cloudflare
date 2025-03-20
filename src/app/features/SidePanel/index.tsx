@@ -1,3 +1,5 @@
+"use client";
+
 import ViewSidebarOutlinedIcon from "@mui/icons-material/ViewSidebarOutlined";
 import { IconButton, Stack, Tabs, Typography } from "@mui/material";
 import { type FC, useState } from "react";

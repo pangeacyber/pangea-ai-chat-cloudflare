@@ -1,3 +1,5 @@
+"use client";
+
 import { css } from "@emotion/css";
 import ViewSidebarOutlinedIcon from "@mui/icons-material/ViewSidebarOutlined";
 import { GlobalStyles, IconButton, Stack } from "@mui/material";
@@ -6,7 +8,7 @@ import { JsonView, darkStyles } from "react-json-view-lite";
 
 import CollapsablePanel from "@app/components/CollapsablePanel";
 import PanelHeader from "@app/components/PanelHeader";
-import { useChatContext } from "@app/context";
+import { useAppState } from "@app/context";
 import { Colors } from "@app/theme";
 
 import { highlight } from "./utils";
@@ -56,7 +58,7 @@ const SampleCode: FC = () => {
 };
 
 const ResponsesSidePanel: FC<Props> = ({ onClose }) => {
-  const { aiGuardResponses, authzResponses, documents } = useChatContext();
+  const { aiGuardResponses, authzResponses, documents } = useAppState();
 
   return (
     <Stack
@@ -75,9 +77,9 @@ const ResponsesSidePanel: FC<Props> = ({ onClose }) => {
 
         <CollapsablePanel title="AI Guard">
           <Stack gap={1} py={1} fontFamily="monospace">
-            {aiGuardResponses.map((response) => (
+            {aiGuardResponses.map((response, i) => (
               <JsonView
-                key={(response as PangeaResponse<unknown>).request_id}
+                key={(response as PangeaResponse<unknown>).request_id || i}
                 data={response}
                 style={reactJsonViewStyles}
               />
@@ -87,9 +89,9 @@ const ResponsesSidePanel: FC<Props> = ({ onClose }) => {
 
         <CollapsablePanel title="AuthZ">
           <Stack gap={1} py={1} fontFamily="monospace">
-            {authzResponses.map((response) => (
+            {authzResponses.map((response, i) => (
               <JsonView
-                key={(response as PangeaResponse<unknown>).request_id}
+                key={(response as PangeaResponse<unknown>).request_id || i}
                 data={response}
                 style={reactJsonViewStyles}
               />

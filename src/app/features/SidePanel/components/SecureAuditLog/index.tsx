@@ -1,9 +1,9 @@
 import { Button, Stack, Typography } from "@mui/material";
 
-import { useChatContext } from "@src/app/context";
+import { useAppState } from "@src/app/context";
 
 const SecureAuditLog = () => {
-  const { setAuditPanelOpen } = useChatContext();
+  const { setAuditPanelOpen } = useAppState();
 
   return (
     <Stack spacing={2}>

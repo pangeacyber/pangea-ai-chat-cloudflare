@@ -1,9 +1,9 @@
 import { Stack, Switch, Typography } from "@mui/material";
 
-import { useChatContext } from "@src/app/context";
+import { useAppState } from "@src/app/context";
 
 const AuthZ = () => {
-  const { authzEnabled, setAuthzEnabled } = useChatContext();
+  const { authzEnabled, setAuthzEnabled } = useAppState();
 
   return (
     <Stack spacing={2}>
