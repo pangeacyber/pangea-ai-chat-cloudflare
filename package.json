@@ -50,7 +50,7 @@
     "@cloudflare/workers-types": "4.20250320.0",
     "@dotenvx/dotenvx": "1.39.0",
     "@googleapis/docs": "3.3.3",
-    "@googleapis/drive": "8.16.0",
+    "@googleapis/drive": "11.0.0",
     "@googleapis/sheets": "9.6.0",
     "@tsconfig/next": "2.0.3",
     "@types/node": "^22.13.10",
