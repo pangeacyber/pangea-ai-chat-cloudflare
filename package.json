@@ -59,7 +59,7 @@
     "citty": "0.1.6",
     "tsx": "4.19.3",
     "typescript": "^5.8.2",
-    "ultracite": "4.1.21",
+    "ultracite": "4.2.0",
     "wrangler": "4.3.0"
   }
 }
