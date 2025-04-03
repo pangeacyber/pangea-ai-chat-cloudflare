@@ -37,7 +37,7 @@ export const callInputDataGuard = async (
   overrides?: DetectorOverrides,
 ) => {
   const payload = {
-    recipe: "pangea_llm_prompt_guard",
+    recipe: "pangea_prompt_guard",
     messages,
     overrides,
   };
