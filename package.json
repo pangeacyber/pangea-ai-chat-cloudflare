@@ -48,7 +48,7 @@
     "@biomejs/biome": "1.9.4",
     "@cloudflare/next-on-pages": "1.13.12",
     "@cloudflare/workers-types": "4.20250404.0",
-    "@dotenvx/dotenvx": "1.39.0",
+    "@dotenvx/dotenvx": "1.39.1",
     "@googleapis/docs": "3.3.3",
     "@googleapis/drive": "11.0.0",
     "@googleapis/sheets": "9.6.0",
