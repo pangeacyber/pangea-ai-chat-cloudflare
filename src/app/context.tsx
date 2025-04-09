@@ -36,6 +36,11 @@ const STORAGE_KEY = "app-state";
 let storedState: State | null = null;
 try {
   storedState = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+
+  if (storedState) {
+    storedState.loading = false;
+    storedState.loginOpen = false;
+  }
 } catch (_) {
   // No-op.
 }
@@ -65,7 +70,8 @@ export const store = new Store<State>(
 );
 
 store.subscribe(() => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(store.state));
+  const { loading, loginOpen, ...stateToStore } = store.state;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToStore));
 });
 
 export function useAppState() {
