@@ -49,7 +49,7 @@
     "@cloudflare/next-on-pages": "1.13.12",
     "@cloudflare/workers-types": "4.20250610.0",
     "@dotenvx/dotenvx": "1.44.2",
-    "@googleapis/docs": "3.4.0",
+    "@googleapis/docs": "4.0.1",
     "@googleapis/drive": "12.1.0",
     "@googleapis/sheets": "9.8.0",
     "@tsconfig/next": "2.0.3",
