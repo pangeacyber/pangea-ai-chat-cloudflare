@@ -42,7 +42,7 @@
     "react-dom": "^18.3.1",
     "react-json-view-lite": "2.4.1",
     "shiki": "3.6.0",
-    "zod": "3.25.63"
+    "zod": "3.25.64"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
