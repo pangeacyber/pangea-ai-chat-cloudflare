@@ -48,7 +48,7 @@
     "zod": "3.25.67"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.0.5",
+    "@biomejs/biome": "2.0.6",
     "@cloudflare/next-on-pages": "1.13.12",
     "@cloudflare/workers-types": "4.20250627.0",
     "@dotenvx/dotenvx": "1.45.1",
