@@ -1,4 +1,4 @@
-import { Tab, styled } from "@mui/material";
+import { styled, Tab } from "@mui/material";
 
 import { Colors } from "@src/app/theme";
 

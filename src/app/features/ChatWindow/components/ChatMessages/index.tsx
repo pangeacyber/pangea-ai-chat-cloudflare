@@ -1,10 +1,9 @@
 import { ReviewsOutlined } from "@mui/icons-material";
 import { Avatar, Box, Stack, Typography } from "@mui/material";
-import type { FC } from "react";
-
 import PangeaLogo from "@src/app/components/Logo";
 import { Colors } from "@src/app/theme";
 import type { AIGuardResult } from "@src/types";
+import type { FC } from "react";
 
 interface UserPromptProps {
   message: string;
@@ -25,9 +24,9 @@ export const UserPromptMessage: FC<UserPromptProps> = ({
 }) => {
   return (
     <Stack
+      alignItems="center"
       direction="row"
       gap={1}
-      alignItems="center"
       justifyContent="flex-end"
       sx={{
         margin: "24px 0 24px 100px",
@@ -52,8 +51,8 @@ export const LlmResponse: FC<LlmMessageProps> = ({ message }) => {
   return (
     <Stack
       direction="row"
-      justifyContent="flex-start"
       gap={2}
+      justifyContent="flex-start"
       sx={{
         margin: "24px 100px 24px 0",
         pre: {
@@ -116,9 +115,9 @@ export const AiGuardMessage: FC<AiGuardProps> = ({ findings }) => {
 
   return (
     <Stack
+      alignItems="center"
       direction="row"
       gap={1}
-      alignItems="center"
       justifyContent="flex-start"
       sx={{
         marginBottom: "2px",
@@ -129,8 +128,8 @@ export const AiGuardMessage: FC<AiGuardProps> = ({ findings }) => {
     >
       <ReviewsOutlined sx={{ color: Colors.secondary }} />
       <Typography
-        variant="body1"
         sx={{ fontSize: "14px", whiteSpace: "nowrap" }}
+        variant="body1"
       >
         AI Guard
       </Typography>

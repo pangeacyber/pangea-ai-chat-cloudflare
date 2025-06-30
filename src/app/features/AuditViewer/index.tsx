@@ -1,5 +1,7 @@
 "use client";
 
+import { useAppState } from "@app/context";
+import { Colors } from "@app/theme";
 import {
   Close,
   ExpandLess,
@@ -13,9 +15,6 @@ import {
   type Audit,
   AuditLogViewer,
 } from "@pangeacyber/react-mui-audit-log-viewer";
-
-import { useAppState } from "@app/context";
-import { Colors } from "@app/theme";
 import { auditProxyRequest } from "@src/app/proxy";
 
 const visibilityModel = {
@@ -126,7 +125,7 @@ const AuditViewer = () => {
           sx={{ cursor: "pointer", color: Colors.icons }}
         />
       </Stack>
-      <Collapse orientation="vertical" in={auditPanelOpen}>
+      <Collapse in={auditPanelOpen} orientation="vertical">
         <Stack
           gap={2}
           sx={{
@@ -164,12 +163,12 @@ const AuditViewer = () => {
           {auditPanelOpen && (
             <AuditLogViewer
               initialQuery=""
-              // @ts-ignore
-              onSearch={handleSearch}
-              // @ts-ignore
+              // @ts-expect-error
               onPageChange={handlePageChange}
-              searchOnMount={true}
+              // @ts-expect-error
+              onSearch={handleSearch}
               schema={schema as unknown as Audit.Schema}
+              searchOnMount={true}
               visibilityModel={visibilityModel}
             />
           )}

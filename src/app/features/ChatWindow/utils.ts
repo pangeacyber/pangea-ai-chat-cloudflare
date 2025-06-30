@@ -1,6 +1,4 @@
 import type { MessageFieldWithRole } from "@langchain/core/messages";
-import type { Audit } from "pangea-node-sdk";
-
 import {
   aiProxyRequest,
   auditProxyRequest,
@@ -9,6 +7,7 @@ import {
   unredactProxyRequest,
 } from "@src/app/proxy";
 import type { DetectorOverrides } from "@src/types";
+import type { Audit } from "pangea-node-sdk";
 
 export const fetchDocuments = async (
   token: string,

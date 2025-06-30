@@ -2,10 +2,9 @@ import type { Ai, VectorizeIndex } from "@cloudflare/workers-types";
 import { ChatCloudflareWorkersAI } from "@langchain/cloudflare";
 import type { MessageFieldWithRole } from "@langchain/core/messages";
 import { StringOutputParser } from "@langchain/core/output_parsers";
-import type { NextRequest } from "next/server";
-
 import { DAILY_MAX_MESSAGES, PROMPT_MAX_CHARS } from "@src/const";
 import { rateLimitQuery } from "@src/utils";
+import type { NextRequest } from "next/server";
 import { PangeaAuditCallbackHandler } from "../audit-langchain-tracer";
 import { auditSearchRequest, validateToken } from "../requests";
 

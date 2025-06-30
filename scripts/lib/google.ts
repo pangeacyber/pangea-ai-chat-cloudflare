@@ -51,7 +51,6 @@ export class GoogleDriveRetriever extends BaseRetriever {
   ): Promise<DocumentInterface<Record<string, unknown>>[]> {
     const results = await this.files.list({
       q:
-        // biome-ignore lint/style/useTemplate: <explanation>
         `'${this.folderId}' in parents ` +
         `and (mimeType = 'application/vnd.google-apps.spreadsheet' or mimeType = 'application/vnd.google-apps.document') ` +
         "and trashed = false",

@@ -1,3 +1,4 @@
+import { Colors } from "@app/theme";
 import {
   LockOutlined,
   LoginOutlined,
@@ -6,8 +7,6 @@ import {
 } from "@mui/icons-material";
 import { IconButton, Stack } from "@mui/material";
 import type { FC } from "react";
-
-import { Colors } from "@app/theme";
 
 import PangeaLogo from "../Logo";
 
@@ -18,10 +17,9 @@ interface Props {
 const SideBar: FC<Props> = ({ handleClick }) => {
   return (
     <Stack
-      width="60px"
-      onClick={handleClick}
       alignItems="center"
       justifyContent="space-between"
+      onClick={handleClick}
       sx={{
         margin: "20px 0 20px 20px",
         padding: "16px 0",
@@ -29,8 +27,9 @@ const SideBar: FC<Props> = ({ handleClick }) => {
         borderRadius: "10px",
         cursor: "pointer",
       }}
+      width="60px"
     >
-      <Stack gap={2.5} alignItems="center">
+      <Stack alignItems="center" gap={2.5}>
         <PangeaLogo />
         <MediationOutlined sx={{ color: Colors.secondary }} />
         <ReviewsOutlined sx={{ color: Colors.secondary }} />

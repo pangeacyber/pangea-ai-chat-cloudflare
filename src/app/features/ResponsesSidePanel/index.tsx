@@ -1,15 +1,14 @@
 "use client";
 
-import { css } from "@emotion/css";
-import ViewSidebarOutlinedIcon from "@mui/icons-material/ViewSidebarOutlined";
-import { GlobalStyles, IconButton, Stack } from "@mui/material";
-import { type FC, type JSX, useLayoutEffect, useState } from "react";
-import { JsonView, darkStyles } from "react-json-view-lite";
-
 import CollapsablePanel from "@app/components/CollapsablePanel";
 import PanelHeader from "@app/components/PanelHeader";
 import { useAppState } from "@app/context";
 import { Colors } from "@app/theme";
+import { css } from "@emotion/css";
+import ViewSidebarOutlinedIcon from "@mui/icons-material/ViewSidebarOutlined";
+import { GlobalStyles, IconButton, Stack } from "@mui/material";
+import { type FC, type JSX, useLayoutEffect, useState } from "react";
+import { darkStyles, JsonView } from "react-json-view-lite";
 
 import { highlight } from "./utils";
 
@@ -76,11 +75,11 @@ const ResponsesSidePanel: FC<Props> = ({ onClose }) => {
         </PanelHeader>
 
         <CollapsablePanel title="AI Guard">
-          <Stack gap={1} py={1} fontFamily="monospace">
+          <Stack fontFamily="monospace" gap={1} py={1}>
             {aiGuardResponses.map((response, i) => (
               <JsonView
-                key={(response as PangeaResponse<unknown>).request_id || i}
                 data={response}
+                key={(response as PangeaResponse<unknown>).request_id || i}
                 style={reactJsonViewStyles}
               />
             ))}
@@ -88,11 +87,11 @@ const ResponsesSidePanel: FC<Props> = ({ onClose }) => {
         </CollapsablePanel>
 
         <CollapsablePanel title="AuthZ">
-          <Stack gap={1} py={1} fontFamily="monospace">
+          <Stack fontFamily="monospace" gap={1} py={1}>
             {authzResponses.map((response, i) => (
               <JsonView
-                key={(response as PangeaResponse<unknown>).request_id || i}
                 data={response}
+                key={(response as PangeaResponse<unknown>).request_id || i}
                 style={reactJsonViewStyles}
               />
             ))}
@@ -100,7 +99,7 @@ const ResponsesSidePanel: FC<Props> = ({ onClose }) => {
         </CollapsablePanel>
 
         <CollapsablePanel title="Documents">
-          <Stack gap={1} py={1} fontFamily="monospace">
+          <Stack fontFamily="monospace" gap={1} py={1}>
             {documents.map(({ id, pageContent }) => (
               <pre key={id}>{pageContent}</pre>
             ))}
@@ -108,7 +107,7 @@ const ResponsesSidePanel: FC<Props> = ({ onClose }) => {
         </CollapsablePanel>
 
         <CollapsablePanel title="Sample code">
-          <Stack gap={1} py={1} fontFamily="monospace">
+          <Stack fontFamily="monospace" gap={1} py={1}>
             <GlobalStyles
               styles={{
                 pre: {

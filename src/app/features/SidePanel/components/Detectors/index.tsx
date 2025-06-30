@@ -18,9 +18,8 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import type { ReactElement, ReactNode } from "react";
-
 import { useAppState } from "@src/app/context";
+import type { ReactElement, ReactNode } from "react";
 
 interface Detector {
   key: string;
@@ -80,14 +79,14 @@ const InfoTooltip = ({
   title: string;
 }) => (
   <Tooltip
+    placement="right"
     title={
       <Box sx={{ p: 1 }}>
         <Typography variant="body2">
           {title}{" "}
           <Link
-            target="_blank"
-            rel="noreferrer"
             href="https://pangea.cloud/docs/ai-guard/general"
+            rel="noreferrer"
             sx={{
               color: "secondary.main",
               fontSize: "0.875rem",
@@ -97,13 +96,13 @@ const InfoTooltip = ({
                 textDecoration: "underline",
               },
             }}
+            target="_blank"
           >
             Learn more in docs.
           </Link>
         </Typography>
       </Box>
     }
-    placement="right"
   >
     {children}
   </Tooltip>
@@ -122,15 +121,15 @@ const Detectors = () => {
 
       <List>
         {DETECTORS.map((detector: Detector) => (
-          <ListItem key={detector.name} disablePadding>
+          <ListItem disablePadding key={detector.name}>
             <InfoTooltip title={detector.description}>
               <ListItemButton sx={{ borderRadius: "10px" }}>
                 <ListItemIcon color="white">{detector.icon}</ListItemIcon>
                 <ListItemText primary={detector.name} />
                 <Switch
+                  checked={detectors[detector.key]}
                   color="secondary"
                   inputProps={{ "aria-label": detector.name }}
-                  checked={detectors[detector.key]}
                   onChange={(_, checked) =>
                     setDetectors({
                       ...detectors,

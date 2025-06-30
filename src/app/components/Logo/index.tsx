@@ -8,22 +8,22 @@ interface Props {
 const PangeaLogo: FC<Props> = ({ size = 32 }) => {
   return (
     <Stack
-      width={size}
-      height={size}
       alignItems="center"
+      height={size}
       justifyContent="center"
       sx={{
         background:
           "linear-gradient(0deg, #551B76 0%, #29ADEB 100%), linear-gradient(0deg, rgba(20, 23, 25, 0.3), rgba(20, 23, 25, 0.3))",
         borderRadius: "10px",
       }}
+      width={size}
     >
       <svg
-        role="presentation"
-        width="18"
-        height="16"
-        viewBox="0 0 18 16"
         fill="none"
+        height="16"
+        role="presentation"
+        viewBox="0 0 18 16"
+        width="18"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path

@@ -1,13 +1,12 @@
 "use client";
 
-import { Box, Button, Drawer, Modal, Stack, Typography } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { useAuth } from "@pangeacyber/react-auth";
-
 import RightSideBar from "@app/components/RightSideBar";
 import SideBar from "@app/components/SideBar";
 import { useAppState } from "@app/context";
 import { Colors } from "@app/theme";
+import { Box, Button, Drawer, Modal, Stack, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { useAuth } from "@pangeacyber/react-auth";
 import PangeaLogo from "@src/app/components/Logo";
 
 import AuditViewer from "../AuditViewer";
@@ -79,6 +78,8 @@ const Layout = () => {
       <Box sx={{ display: "flex", background: Colors.background.default }}>
         {!sidePanelOpen && <SideBar handleClick={handlePanelOpen} />}
         <Drawer
+          anchor="left"
+          open={sidePanelOpen}
           sx={{
             width: panelOpenWidth,
             flexShrink: 0,
@@ -88,11 +89,9 @@ const Layout = () => {
               borderRight: "none",
             },
           }}
-          open={sidePanelOpen}
           variant="persistent"
-          anchor="left"
         >
-          <SidePanel open={sidePanelOpen} onClose={handlePanelClose} />
+          <SidePanel onClose={handlePanelClose} open={sidePanelOpen} />
         </Drawer>
         <Main leftOpen={sidePanelOpen} rightOpen={rightPanelOpen}>
           <ChatWindow />
@@ -105,6 +104,8 @@ const Layout = () => {
           <RightSideBar handleClick={() => setRightPanelOpen(true)} />
         )}
         <Drawer
+          anchor="right"
+          open={rightPanelOpen}
           sx={{
             flexShrink: 0,
             ...(rightPanelOpen && {
@@ -116,18 +117,16 @@ const Layout = () => {
               borderLeft: "none",
             },
           }}
-          open={rightPanelOpen}
           variant="persistent"
-          anchor="right"
         >
           <ResponsesSidePanel
-            open={rightPanelOpen}
             onClose={() => setRightPanelOpen(false)}
+            open={rightPanelOpen}
           />
         </Drawer>
       </Box>
-      <Modal open={loginOpen} onClose={handleLoginClose}>
-        <Stack alignItems="center" justifyContent="center" height="100vh">
+      <Modal onClose={handleLoginClose} open={loginOpen}>
+        <Stack alignItems="center" height="100vh" justifyContent="center">
           <Stack
             gap={2}
             p={4}
@@ -137,7 +136,7 @@ const Layout = () => {
               background: Colors.background.paper,
             }}
           >
-            <Stack direction="row" gap={1} alignItems="center">
+            <Stack alignItems="center" direction="row" gap={1}>
               <PangeaLogo />
               <Typography variant="body1">Pangea Chat</Typography>
             </Stack>
@@ -146,7 +145,7 @@ const Layout = () => {
               Unlock access to try out Pangea AI Guard and Prompt Guard
               Services.
             </Typography>
-            <Button variant="outlined" onClick={login}>
+            <Button onClick={login} variant="outlined">
               Sign up or log in
             </Button>
           </Stack>

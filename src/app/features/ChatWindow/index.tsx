@@ -17,15 +17,6 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { type AuthUser, useAuth } from "@pangeacyber/react-auth";
-import type { AIGuard } from "pangea-node-sdk";
-import {
-  type ChangeEvent,
-  type KeyboardEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-
 import { useAppState } from "@src/app/context";
 import { Colors } from "@src/app/theme";
 import { DAILY_MAX_MESSAGES, PROMPT_MAX_CHARS } from "@src/const";
@@ -36,6 +27,14 @@ import type {
   PangeaResponse,
 } from "@src/types";
 import { constructLlmInput, rateLimitQuery } from "@src/utils";
+import type { AIGuard } from "pangea-node-sdk";
+import {
+  type ChangeEvent,
+  type KeyboardEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import ChatScroller from "./components/ChatScroller";
 import {
@@ -359,57 +358,57 @@ const ChatWindow = () => {
 
     if (authenticated && !loading && !processing) {
       loadSearchData();
-    } else if (!authenticated && !loading) {
+    } else if (!(authenticated || loading)) {
       setMessages([]);
     }
   }, [authenticated]);
 
   useEffect(() => {
-    if (!loading && !processing) {
+    if (!(loading || processing)) {
       inputRef.current?.focus();
     }
   }, [processing, loading]);
 
   return (
-    <Stack width="100%" height="100%">
+    <Stack height="100%" width="100%">
       <Paper sx={{ height: "100%" }}>
         <Stack
-          height="100%"
           alignItems="center"
+          height="100%"
           justifyContent="space-between"
           position="relative"
         >
           <IconButton
             aria-label="clear"
-            title="Clear chat"
+            disableRipple
             onClick={() => setMessages([])}
             size="small"
-            disableRipple
             sx={{
               position: "absolute",
               top: "0.35em",
               right: "0.45em",
             }}
+            title="Clear chat"
           >
             <RestartAlt />
           </IconButton>
           <Typography
-            variant="h1"
             sx={{
               display: "flex",
               height: "100%",
               alignItems: "center",
               textAlign: "center",
             }}
+            variant="h1"
           >
             Welcome to Pangea Chat.
           </Typography>
-          <Stack width="100%" sx={{ position: "relative" }}>
+          <Stack sx={{ position: "relative" }} width="100%">
             <ChatScroller messages={messages} />
             <Stack
+              alignItems="center"
               direction="row"
               gap={1}
-              alignItems="center"
               justifyContent="space-between"
               sx={{
                 position: "relative",
@@ -431,10 +430,10 @@ const ChatWindow = () => {
                 }}
               >
                 <Snackbar
-                  open={open}
-                  autoHideDuration={5000}
                   anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                  autoHideDuration={5000}
                   onClose={handleClose}
+                  open={open}
                   sx={{
                     position: "absolute",
                     width: "100%",
@@ -446,24 +445,24 @@ const ChatWindow = () => {
                 </Snackbar>
               </Box>
               <InputBase
-                inputRef={inputRef}
-                value={userPrompt}
-                placeholder="What’s the weather today?"
-                size="small"
-                multiline
-                maxRows={4}
-                sx={{ width: "calc(100% - 48px)" }}
                 disabled={loading || !!processing}
+                inputRef={inputRef}
+                maxRows={4}
+                multiline
                 onChange={handleChange}
                 onKeyDown={handleKeyPress}
+                placeholder="What’s the weather today?"
+                size="small"
+                sx={{ width: "calc(100% - 48px)" }}
+                value={userPrompt}
               />
-              <Tooltip title={error} placement="top" color="warning">
+              <Tooltip color="warning" placement="top" title={error}>
                 <span>
                   <IconButton
-                    onClick={handleSubmit}
                     disabled={
                       loading || !!processing || overlimit || remaining <= 0
                     }
+                    onClick={handleSubmit}
                   >
                     <SendIcon />
                   </IconButton>
@@ -473,9 +472,9 @@ const ChatWindow = () => {
 
             {!!processing && (
               <Stack
+                alignItems="center"
                 direction="row"
                 gap={2}
-                alignItems="center"
                 sx={{
                   position: "absolute",
                   bottom: "50px",
@@ -495,17 +494,17 @@ const ChatWindow = () => {
             )}
           </Stack>
           <Stack
-            direction="row"
             alignItems="center"
+            direction="row"
             justifyContent="center"
             mb="12px"
           >
             {!loading && authenticated && user && !isPangean(user) && (
               <Typography
-                variant="body2"
                 fontSize="12px"
-                lineHeight="20px"
                 height="20px"
+                lineHeight="20px"
+                variant="body2"
               >
                 Message count: {remaining} remaining | You can send{" "}
                 {DAILY_MAX_MESSAGES} messages a day
