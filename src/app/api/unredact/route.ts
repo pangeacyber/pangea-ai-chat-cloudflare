@@ -1,6 +1,5 @@
-import type { NextRequest } from "next/server";
-
 import type { PangeaResponse, UnredactResult } from "@src/types";
+import type { NextRequest } from "next/server";
 
 import { getUrl, postRequest, validateToken } from "../requests";
 

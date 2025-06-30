@@ -1,6 +1,5 @@
-import type { NextRequest } from "next/server";
-
 import type { AIGuardResult, PangeaResponse } from "@src/types";
+import type { NextRequest } from "next/server";
 
 import {
   auditLogRequest,

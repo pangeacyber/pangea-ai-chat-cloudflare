@@ -6,7 +6,10 @@
   "engines": {
     "node": ">=20.19.3"
   },
-  "browserslist": ["last 1 Firefox version", "last 1 Chrome version"],
+  "browserslist": [
+    "last 1 Firefox version",
+    "last 1 Chrome version"
+  ],
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
@@ -45,7 +48,7 @@
     "zod": "3.25.67"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
+    "@biomejs/biome": "2.0.5",
     "@cloudflare/next-on-pages": "1.13.12",
     "@cloudflare/workers-types": "4.20250627.0",
     "@dotenvx/dotenvx": "1.45.1",
@@ -59,7 +62,7 @@
     "citty": "0.1.6",
     "tsx": "4.20.3",
     "typescript": "^5.8.3",
-    "ultracite": "4.2.13",
+    "ultracite": "5.0.25",
     "wrangler": "4.22.0"
   }
 }

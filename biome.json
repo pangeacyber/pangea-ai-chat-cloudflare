@@ -6,18 +6,27 @@
       "complexity": {
         "noExcessiveCognitiveComplexity": "off"
       },
+      "correctness": {
+        "noUnusedVariables": {
+          "level": "error",
+          "options": {
+            "ignoreRestSiblings": true
+          }
+        }
+      },
       "nursery": {
-        "noNestedTernary": "off"
+        "noAwaitInLoop": "off",
+        "noBitwiseOperators": "off",
+        "noShadow": "off"
       },
       "style": {
+        "noNestedTernary": "off",
         "noNonNullAssertion": "off",
         "noParameterAssign": "off",
-        "useFilenamingConvention": "off",
-        "useSingleCaseStatement": "off"
+        "useFilenamingConvention": "off"
       },
       "suspicious": {
         "noConsole": "off",
-        "noConsoleLog": "off",
         "noEmptyBlockStatements": "off"
       }
     }

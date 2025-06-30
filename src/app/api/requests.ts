@@ -1,9 +1,8 @@
-import type { NextRequest } from "next/server";
-import type { Audit, AuthZ } from "pangea-node-sdk";
-
 import { env } from "@src/env";
 import type { PangeaResponse } from "@src/types";
 import { delay } from "@src/utils";
+import type { NextRequest } from "next/server";
+import type { Audit, AuthZ } from "pangea-node-sdk";
 
 type ValidatedToken =
   | { success: true; username: string; profile: Record<string, string> }

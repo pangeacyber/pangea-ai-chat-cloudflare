@@ -1,9 +1,8 @@
 import type { DocumentInterface } from "@langchain/core/documents";
-import type { AuthZ } from "pangea-node-sdk";
-
 import type { RequestBody as DocsRequestBody } from "@src/app/api/docs/route";
 import type { RequestBody as UnredactRequestBody } from "@src/app/api/unredact/route";
 import type { AIGuardResult, PangeaResponse, UnredactResult } from "@src/types";
+import type { AuthZ } from "pangea-node-sdk";
 
 export const docsProxyRequest = async (
   token: string,

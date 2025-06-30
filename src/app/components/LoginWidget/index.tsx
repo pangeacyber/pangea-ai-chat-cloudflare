@@ -29,7 +29,7 @@ const LoginWidget = () => {
   if (!authenticated) {
     return (
       <LoginContainer>
-        <Button variant="outlined" onClick={login}>
+        <Button onClick={login} variant="outlined">
           Sign up or log in
         </Button>
       </LoginContainer>
@@ -52,14 +52,14 @@ const LoginWidget = () => {
       </Stack>
       <Stack direction="row" gap={1}>
         <Button
-          variant="outlined"
+          href="https://console.pangea.cloud"
           sx={{ width: "50%" }}
           target="_new"
-          href="https://console.pangea.cloud"
+          variant="outlined"
         >
           Console
         </Button>
-        <Button variant="outlined" sx={{ width: "50%" }} onClick={handleLogout}>
+        <Button onClick={handleLogout} sx={{ width: "50%" }} variant="outlined">
           Sign out
         </Button>
       </Stack>

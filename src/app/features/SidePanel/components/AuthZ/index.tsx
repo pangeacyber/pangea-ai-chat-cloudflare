@@ -12,16 +12,16 @@ const AuthZ = () => {
       </Typography>
 
       <Stack
-        direction="row"
         alignItems="center"
-        justifyContent="space-between"
+        direction="row"
         gap={1}
+        justifyContent="space-between"
         padding="10px 20px"
       >
         <Typography variant="body1">Apply AuthZ</Typography>
         <Switch
-          color="secondary"
           checked={authzEnabled}
+          color="secondary"
           onChange={(_, checked) => setAuthzEnabled(checked)}
           sx={{ marginRight: "-12px" }}
         />

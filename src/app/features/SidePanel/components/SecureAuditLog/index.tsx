@@ -13,7 +13,7 @@ const SecureAuditLog = () => {
         injections, PII entities, malicious entities, access details, and more.
       </Typography>
 
-      <Button variant="outlined" onClick={() => setAuditPanelOpen(true)}>
+      <Button onClick={() => setAuditPanelOpen(true)} variant="outlined">
         Open Audit Log Viewer
       </Button>
     </Stack>

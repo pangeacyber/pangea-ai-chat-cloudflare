@@ -12,7 +12,7 @@ const CollapsablePanel: FC<Props> = ({ title, children }) => {
 
   return (
     <Stack>
-      <Stack direction="row" gap={1} alignItems="center" pl={1}>
+      <Stack alignItems="center" direction="row" gap={1} pl={1}>
         <IconButton onClick={() => setOpen(!open)}>
           <KeyboardArrowDownOutlined
             sx={{
@@ -21,11 +21,11 @@ const CollapsablePanel: FC<Props> = ({ title, children }) => {
             }}
           />
         </IconButton>
-        <Typography variant="body1" sx={{ fontWeight: "500" }}>
+        <Typography sx={{ fontWeight: "500" }} variant="body1">
           {title}
         </Typography>
       </Stack>
-      <Collapse orientation="vertical" in={open}>
+      <Collapse in={open} orientation="vertical">
         {children}
       </Collapse>
     </Stack>

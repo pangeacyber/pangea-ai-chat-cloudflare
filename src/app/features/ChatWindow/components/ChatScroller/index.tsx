@@ -1,10 +1,9 @@
 import { CircularProgress, Stack } from "@mui/material";
 import { useAuth } from "@pangeacyber/react-auth";
-import { type FC, useCallback, useMemo } from "react";
-
 import { useAppState } from "@src/app/context";
 import { Colors } from "@src/app/theme";
 import type { ChatMessage } from "@src/types";
+import { type FC, useCallback, useMemo } from "react";
 
 import {
   AiGuardMessage,
@@ -36,16 +35,16 @@ const ChatScroller: FC<Props> = ({ messages }) => {
             case "llm_response":
               return (
                 <LlmResponse
-                  message={message.output!}
                   key={`message-${message.hash}`}
+                  message={message.output!}
                 />
               );
             case "user_prompt":
               return (
                 <UserPromptMessage
+                  key={`message-${message.hash}`}
                   message={message.input || ""}
                   username={user?.username || "?"}
-                  key={`message-${message.hash}`}
                 />
               );
             case "ai_guard":
@@ -73,7 +72,7 @@ const ChatScroller: FC<Props> = ({ messages }) => {
       }}
     >
       {loading ? (
-        <Stack width="100%" alignItems="center">
+        <Stack alignItems="center" width="100%">
           <CircularProgress sx={{ color: Colors.secondary }} />
         </Stack>
       ) : (

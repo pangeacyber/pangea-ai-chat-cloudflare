@@ -1,7 +1,6 @@
 import type { DocumentInterface } from "@langchain/core/documents";
-import { Store, useStore } from "@tanstack/react-store";
-
 import type { PangeaResponse } from "@src/types";
+import { Store, useStore } from "@tanstack/react-store";
 
 interface Detectors {
   code_detection: boolean;
