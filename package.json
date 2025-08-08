@@ -48,7 +48,7 @@
     "zod": "4.0.14"
   },
   "optionalDependencies": {
-    "esbuild": "0.14.47",
+    "esbuild": "0.25.0",
     "yaml": "2.8.1"
   },
   "devDependencies": {
