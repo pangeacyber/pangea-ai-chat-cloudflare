@@ -45,7 +45,7 @@
     "react-dom": "^18.3.1",
     "react-json-view-lite": "2.4.2",
     "shiki": "3.9.2",
-    "zod": "4.0.16"
+    "zod": "4.0.17"
   },
   "optionalDependencies": {
     "esbuild": "0.14.47",
