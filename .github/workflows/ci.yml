@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4.3.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4.4.0
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4.3.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4.4.0
@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4.3.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4.4.0
