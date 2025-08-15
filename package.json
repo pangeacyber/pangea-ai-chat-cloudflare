@@ -64,7 +64,7 @@
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
     "citty": "0.1.6",
-    "tsx": "4.20.3",
+    "tsx": "4.20.4",
     "typescript": "^5.9.2",
     "ultracite": "5.1.2",
     "wrangler": "4.28.1"
