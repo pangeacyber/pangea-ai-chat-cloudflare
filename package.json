@@ -61,7 +61,7 @@
     "@googleapis/sheets": "11.1.0",
     "@tsconfig/next": "2.0.3",
     "@types/node": "^22.13.10",
-    "@types/react": "^18.3.23",
+    "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
     "citty": "0.1.6",
     "tsx": "4.20.4",
