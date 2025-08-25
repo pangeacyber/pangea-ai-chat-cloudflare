@@ -35,7 +35,7 @@
     "@pangeacyber/react-auth": "^0.0.18",
     "@pangeacyber/react-mui-audit-log-viewer": "^1.0.10",
     "@t3-oss/env-nextjs": "0.13.8",
-    "@tanstack/react-store": "0.7.3",
+    "@tanstack/react-store": "0.7.4",
     "hast-util-to-jsx-runtime": "2.3.6",
     "langchain": "0.3.31",
     "markdown-table": "3.0.4",
