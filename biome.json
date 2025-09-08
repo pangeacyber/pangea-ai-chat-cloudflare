@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "extends": ["ultracite"],
+  "extends": ["@kenan/biome-config"],
   "linter": {
     "rules": {
       "complexity": {
@@ -14,18 +14,16 @@
           }
         }
       },
-      "nursery": {
-        "noAwaitInLoop": "off",
-        "noBitwiseOperators": "off",
-        "noShadow": "off"
-      },
+      "nursery": "off",
       "style": {
         "noNestedTernary": "off",
         "noNonNullAssertion": "off",
         "noParameterAssign": "off",
-        "useFilenamingConvention": "off"
+        "useFilenamingConvention": "off",
+        "useReadonlyClassProperties": "off"
       },
       "suspicious": {
+        "noBitwiseOperators": "off",
         "noConsole": "off",
         "noEmptyBlockStatements": "off"
       }
