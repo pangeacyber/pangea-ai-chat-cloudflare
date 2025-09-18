@@ -40,7 +40,7 @@
     "langchain": "0.3.33",
     "markdown-table": "3.0.4",
     "next": "15.1.7",
-    "pangea-node-sdk": "5.4.0",
+    "pangea-node-sdk": "5.5.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-json-view-lite": "2.5.0",
