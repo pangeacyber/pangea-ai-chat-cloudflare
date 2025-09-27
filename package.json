@@ -67,6 +67,6 @@
     "citty": "0.1.6",
     "tsx": "4.20.5",
     "typescript": "^5.9.2",
-    "wrangler": "4.39.0"
+    "wrangler": "4.40.0"
   }
 }
