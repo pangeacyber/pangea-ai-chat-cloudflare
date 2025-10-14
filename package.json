@@ -57,7 +57,7 @@
     "@cloudflare/workers-types": "4.20251011.0",
     "@dotenvx/dotenvx": "1.51.0",
     "@googleapis/docs": "7.0.0",
-    "@googleapis/drive": "17.0.0",
+    "@googleapis/drive": "18.0.0",
     "@googleapis/sheets": "12.0.0",
     "@kenan/biome-config": "1.0.4",
     "@tsconfig/next": "2.0.3",
