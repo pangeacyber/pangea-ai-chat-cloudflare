@@ -52,7 +52,7 @@
     "yaml": "2.8.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.5",
+    "@biomejs/biome": "2.2.6",
     "@cloudflare/next-on-pages": "1.13.16",
     "@cloudflare/workers-types": "4.20251011.0",
     "@dotenvx/dotenvx": "1.51.0",
