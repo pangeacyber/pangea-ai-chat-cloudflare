@@ -27,7 +27,7 @@
     "@emotion/css": "11.13.5",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@langchain/cloudflare": "0.1.2",
+    "@langchain/cloudflare": "1.0.0",
     "@langchain/core": "0.3.79",
     "@mui/icons-material": "6.5.0",
     "@mui/material": "6.5.0",
